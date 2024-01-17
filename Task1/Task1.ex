@@ -10,7 +10,7 @@ defmodule Task1 do
   {:mul, expr(), expr()} |
   literal() |
   {:exp, expr(),literal()} |
-  {:ln, literal()} |
+  {:ln, expr()} |
   {:div, literal(), expr()} |
   {:sqrt, expr()} |
   {:sin, expr()}
@@ -45,14 +45,24 @@ defmodule Task1 do
 
 
 
-  #derivera ln(f(x)) med avseende på x --------------------------NOTDONE--------------------------
+  #derivera ln(f(x)) med avseende på x
   def derive({:ln, e}, x) do
-    {:div, 1, e}
+    case e do
+      {:num, _} -> {:num, 0}
+      {:var, :x} -> {:div, 1, e}
+      {:var, :_} -> {:num, 0}
+      _ -> {:mul, {:div, 1, e}, derive(e,x)}
+    end
   end
+
+
+
   #derivera sqrt(f(x)) med avseende på x --------------------------NOTDONE--------------------------
   def derive({:sqrt, e}, x) do
     {:div, {:num, 1}, {:mul, {:num, 2}, {:sqrt, e}}}
   end
+
+
   #derivera 1/f(x) med avseende på x --------------------------NOTDONE--------------------------
   def derive({:div, {:num, 1}, e}, x) do
     1
@@ -63,11 +73,11 @@ defmodule Task1 do
   end
 
 
-  #Funktion för att förenkla mateamatiska uttryck
+  #Funktion för att förenkla matematiska uttryck
   def simplify({:add, e1, e2}) do simplify_add(simplify(e1), simplify(e2)) end
   def simplify({:mul, e1, e2}) do simplify_mul(simplify(e1), simplify(e2)) end
   def simplify({:exp, e1, e2}) do simplify_exp(simplify(e1), simplify(e2)) end
-  def simplify({:div, {:num, 1}, e}) do simplify_div({:num, 1}, simplify(e2)) end
+  def simplify({:div, {:num, 1}, e}) do simplify_div({:num, 1}, simplify(e)) end
   def simplify(e) do e end
   #helpers for add
   def simplify_add(e1, {:num, 0}) do e1 end
@@ -99,14 +109,16 @@ defmodule Task1 do
   def pprint({:add, e1, e2}) do "(#{pprint(e1)} + #{pprint(e2)})" end
   def pprint({:mul, e1, e2}) do "#{pprint(e1)} * #{pprint(e2)}" end
   def pprint({:exp, e1, e2}) do "#{pprint(e1)}^#{pprint(e2)}" end
+  def pprint({:ln, e}) do "ln(#{pprint(e)})" end
+  def pprint({:div, 1, e}) do "(1/(#{pprint(e)}))" end
 
   #funktioner för att räkna ut
-  def calc( {:num, n}, _, _)do {:num, n} end
-  def calc( {:var, v}, v, n)do {:num, n} end
-  def calc( {:var, v}, _, _)do {:var, v} end
-  def calc( {:add, e1, e2}, v, n)do {:add, calc(e1, v, n), calc(e2, v, n)} end
-  def calc( {:mul, e1, e2}, v, n)do {:mul, calc(e1, v, n), calc(e2, v, n)} end
-  def calc( {:exp, e1, e2}, v, n)do {:exp, calc(e1, v, n), calc(e2, v, n)} end
+  def calc( {:num, n}, _, _) do {:num, n} end
+  def calc( {:var, v}, v, n) do {:num, n} end
+  def calc( {:var, v}, _, _) do {:var, v} end
+  def calc( {:add, e1, e2}, v, n) do {:add, calc(e1, v, n), calc(e2, v, n)} end
+  def calc( {:mul, e1, e2}, v, n) do {:mul, calc(e1, v, n), calc(e2, v, n)} end
+  def calc( {:exp, e1, e2}, v, n) do {:exp, calc(e1, v, n), calc(e2, v, n)} end
 
 
 
@@ -137,13 +149,38 @@ defmodule Task1 do
     :ok
   end
 
-  #provar derivera ln(x)
+  #provar derivera ln(x) funkar inte för x+1
   def testln() do
-    e = {:ln, {:var, x}}
-    d = derive(e, :x)
-
-    IO.write("Expression: #{pprint(e)}\n")
-    IO.write("Derivative: #{pprint(d)}\n")
+    e1 = {:ln, {:var, :x}}
+    d1 = derive(e1, :x)
+    IO.write("Expression: #{pprint(e1)}\n")
+    IO.write("Derivative: #{pprint(d1)}\n")
+    IO.write("Simplified: #{pprint( simplify(d1) )}\n")
+    IO.write("\n")
+    e2 = {:ln, {:num, 2}}
+    d2 = derive(e2, :x)
+    IO.write("Expression: #{pprint(e2)}\n")
+    IO.write("Derivative: #{pprint(d2)}\n")
+    IO.write("Simplified: #{pprint( simplify(d2) )}\n")
+    IO.write("\n")
+    e3 = {:ln, {:var, :c}}
+    d3 = derive(e3, :x)
+    IO.write("Expression: #{pprint(e3)}\n")
+    IO.write("Derivative: #{pprint(d3)}\n")
+    IO.write("Simplified: #{pprint( simplify(d3) )}\n")
+    IO.write("\n")
+    e4 = {:ln,{:mul, {:num,2}, {:var, :x}}}
+    d4 = derive(e4, :x)
+    IO.write("Expression: #{pprint(e4)}\n")
+    IO.write("Derivative: #{pprint(d4)}\n")
+    IO.write("Simplified: #{pprint( simplify(d4) )}\n")
+    IO.write("\n")
+    e5 = {:ln, {:add, {:var, :x}, {:num, 3}}}
+    d5 = derive(e5, :x)
+    IO.write("Expression: #{pprint(e5)}\n")
+    IO.write("Derivative: #{pprint(d5)}\n")
+    IO.write("Simplified: #{pprint( simplify(d5) )}\n")
+    IO.write("\n")
   end
 
 end
