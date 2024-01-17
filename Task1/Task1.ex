@@ -42,24 +42,29 @@ defmodule Task1 do
     {:mul,{:num, n}, {:exp, e, {:num, n-1}}},
     derive(e,x)}
   end
+  def derive({:exp, e, {:float, n}}, x) do
+    {:mul,
+    {:mul,{:num, n}, {:exp, e, {:float, n-1}}},
+    derive(e,x)}
+  end
 
 
 
   #derivera ln(f(x)) med avseende på x
   def derive({:ln, e}, x) do
     case e do
-      {:num, _} -> {:num, 0}
-      {:var, :x} -> {:div, 1, e}
-      {:var, :_} -> {:num, 0}
+      #{:num, _} -> {:num, 0}
+      #{:var, :x} -> {:div, 1, e}
+      #{:var, :_} -> {:num, 0}
       _ -> {:mul, {:div, 1, e}, derive(e,x)}
     end
   end
 
 
 
-  #derivera sqrt(f(x)) med avseende på x --------------------------NOTDONE--------------------------
+  #derivera sqrt(f(x)) med avseende på x
   def derive({:sqrt, e}, x) do
-    {:div, {:num, 1}, {:mul, {:num, 2}, {:sqrt, e}}}
+    derive({:exp, e, {:float, 0.5} }, x)#float needed?
   end
 
 
@@ -90,6 +95,8 @@ defmodule Task1 do
   def simplify_mul(e1, {:num, 1}) do e1 end
   def simplify_mul({:num, 1}, e2) do e2 end
   def simplify_mul({:num, n1}, {:num, n2}) do {:num, n1*n2} end
+  def simplify_mul({:float, f}, {:num, n}) do {:float, f*n} end #-------------------------
+  def simplify_mul({:num, n}, {:float, f}) do {:float, f*n} end #-------------------------
   def simplify_mul(e1, e2) do {:mul, e1, e2} end
 #helpers for exp
   def simplify_exp(_, {:num, 0}) do {:num, 1} end
@@ -107,10 +114,12 @@ defmodule Task1 do
   def pprint({:num, n}) do "#{n}" end
   def pprint({:var, v}) do "#{v}" end
   def pprint({:add, e1, e2}) do "(#{pprint(e1)} + #{pprint(e2)})" end
-  def pprint({:mul, e1, e2}) do "#{pprint(e1)} * #{pprint(e2)}" end
+  def pprint({:mul, e1, e2}) do "(#{pprint(e1)} * #{pprint(e2)})" end
   def pprint({:exp, e1, e2}) do "#{pprint(e1)}^#{pprint(e2)}" end
   def pprint({:ln, e}) do "ln(#{pprint(e)})" end
   def pprint({:div, 1, e}) do "(1/(#{pprint(e)}))" end
+  def pprint({:sqrt, e}) do "sqrt(#{pprint(e)})" end
+  def pprint({:float, f}) do "#{f}" end #------------------------------------------
 
   #funktioner för att räkna ut
   def calc( {:num, n}, _, _) do {:num, n} end
@@ -150,7 +159,7 @@ defmodule Task1 do
   end
 
   #provar derivera ln(x) funkar inte för x+1
-  def testln() do
+  def test_ln() do
     e1 = {:ln, {:var, :x}}
     d1 = derive(e1, :x)
     IO.write("Expression: #{pprint(e1)}\n")
@@ -182,5 +191,34 @@ defmodule Task1 do
     IO.write("Simplified: #{pprint( simplify(d5) )}\n")
     IO.write("\n")
   end
+
+  def test_sqrt() do
+    e1 = {:sqrt, {:var, :x}}
+    d1 = derive(e1, :x)
+    IO.write("Expression: #{pprint(e1)}\n")
+    IO.write("Derivative: #{pprint(d1)}\n")
+    IO.write("Simplified: #{pprint( simplify(d1) )}\n")
+    IO.write("\n")
+    e2 = {:sqrt, {:num, 1}}
+    d2 = derive(e2, :x)
+    IO.write("Expression: #{pprint(e2)}\n")
+    IO.write("Derivative: #{pprint(d2)}\n")
+    IO.write("Simplified: #{pprint( simplify(d2) )}\n")
+    IO.write("\n")
+    e3 = {:sqrt, {:add, {:var, :x}, {:num, 3}}}
+    d3 = derive(e3, :x)
+    IO.write("Expression: #{pprint(e3)}\n")
+    IO.write("Derivative: #{pprint(d3)}\n")
+    IO.write("Simplified: #{pprint( simplify(d3) )}\n")
+    IO.write("\n")
+    e4 = {:sqrt,{:mul, {:num,2}, {:var, :x}}}
+    d4 = derive(e4, :x)
+    IO.write("Expression: #{pprint(e4)}\n")
+    IO.write("Derivative: #{pprint(d4)}\n")
+    IO.write("Simplified: #{pprint( simplify(d4) )}\n")
+    IO.write("\n")
+  end
+
+
 
 end
