@@ -67,6 +67,7 @@ defmodule Task1 do
   def simplify({:add, e1, e2}) do simplify_add(simplify(e1), simplify(e2)) end
   def simplify({:mul, e1, e2}) do simplify_mul(simplify(e1), simplify(e2)) end
   def simplify({:exp, e1, e2}) do simplify_exp(simplify(e1), simplify(e2)) end
+  def simplify({:div, {:num, 1}, e}) do simplify_div({:num, 1}, simplify(e2)) end
   def simplify(e) do e end
   #helpers for add
   def simplify_add(e1, {:num, 0}) do e1 end
@@ -85,6 +86,8 @@ defmodule Task1 do
   def simplify_exp(e, {:num, 1}) do {:num, e} end
   def simplify_exp({:num, n1}, {:num, n2}) do {:num, :math.pow(n1, n2)} end
   def simplify_exp(e1, e2) do {:exp, e1, e2} end
+#helpers for div
+  def simplify_div({:num, 1}, {:var, x}) do {:div, {:num, 1}, {:var, x}} end
 
 
 
@@ -132,6 +135,15 @@ defmodule Task1 do
     IO.write("Simplified: #{pprint( simplify(d) )}\n")
     IO.write("Calculated: #{pprint( simplify(c) )}\n")
     :ok
+  end
+
+  #provar derivera ln(x)
+  def testln() do
+    e = {:ln, {:var, x}}
+    d = derive(e, :x)
+
+    IO.write("Expression: #{pprint(e)}\n")
+    IO.write("Derivative: #{pprint(d)}\n")
   end
 
 end
