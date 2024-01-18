@@ -70,8 +70,12 @@ defmodule Task1 do
 
   #derivera 1/f(x) med avseende på x --------------------------NOTDONE--------------------------
   def derive({:div, {:num, 1}, e}, x) do
-    1
+    {:mul, derive(e, x), derive({:exp, e, {:num, -1}}, x)}
   end
+
+
+
+
   #derivera sin(f(x)) med avseende på x --------------------------NOTDONE--------------------------
   def derive({:sin, e}, x) do
     {:cos, e}
@@ -117,7 +121,7 @@ defmodule Task1 do
   def pprint({:mul, e1, e2}) do "(#{pprint(e1)} * #{pprint(e2)})" end
   def pprint({:exp, e1, e2}) do "#{pprint(e1)}^#{pprint(e2)}" end
   def pprint({:ln, e}) do "ln(#{pprint(e)})" end
-  def pprint({:div, 1, e}) do "(1/(#{pprint(e)}))" end
+  def pprint({:div, e1, e2}) do "(#{pprint(e1)}/(#{pprint(e2)}))" end
   def pprint({:sqrt, e}) do "sqrt(#{pprint(e)})" end
   def pprint({:float, f}) do "#{f}" end #------------------------------------------
 
@@ -212,6 +216,33 @@ defmodule Task1 do
     IO.write("Simplified: #{pprint( simplify(d3) )}\n")
     IO.write("\n")
     e4 = {:sqrt,{:mul, {:num,2}, {:var, :x}}}
+    d4 = derive(e4, :x)
+    IO.write("Expression: #{pprint(e4)}\n")
+    IO.write("Derivative: #{pprint(d4)}\n")
+    IO.write("Simplified: #{pprint( simplify(d4) )}\n")
+    IO.write("\n")
+  end
+
+  def test_div() do
+    e1 = {:div, {:num, 1}, {:var, :x}}
+    d1 = derive(e1, :x)
+    IO.write("Expression: #{pprint(e1)}\n")
+    IO.write("Derivative: #{pprint(d1)}\n")
+    IO.write("Simplified: #{pprint( simplify(d1) )}\n")
+    IO.write("\n")
+    e2 = {:div, {:num, 1}, {:mul, {:num,2}, {:var, :x}}}
+    d2 = derive(e2, :x)
+    IO.write("Expression: #{pprint(e2)}\n")
+    IO.write("Derivative: #{pprint(d2)}\n")
+    IO.write("Simplified: #{pprint( simplify(d2) )}\n")
+    IO.write("\n")
+    e3 = {:div, {:num, 1}, {:add, {:num,1}, {:var, :x}}}
+    d3 = derive(e3, :x)
+    IO.write("Expression: #{pprint(e3)}\n")
+    IO.write("Derivative: #{pprint(d3)}\n")
+    IO.write("Simplified: #{pprint( simplify(d3) )}\n")
+    IO.write("\n")
+    e4 = {:div, {:num, 1}, {:exp, {:var, :x}, {:num, 2}}}
     d4 = derive(e4, :x)
     IO.write("Expression: #{pprint(e4)}\n")
     IO.write("Derivative: #{pprint(d4)}\n")
