@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Elixir: Mix",
+        "type": "mix_task",
+        "request": "launch",
+        "task": "debug",
+        "args": ["run", "--no-halt"]
+      }
+    ]
+  }
