@@ -11,7 +11,7 @@ defmodule Task1 do
   literal() |
   {:exp, expr(),literal()} |
   {:ln, expr()} |
-  {:div, literal(), expr()} |
+  {:div, expr(), expr()} |
   {:sqrt, expr()} |
   {:sin, expr()}
 
@@ -44,7 +44,7 @@ defmodule Task1 do
   end
   def derive({:exp, e, {:float, n}}, x) do
     {:mul,
-    {:mul,{:num, n}, {:exp, e, {:float, n-1}}},
+    {:mul,{:float, n}, {:exp, e, {:float, n-1}}},
     derive(e,x)}
   end
 
@@ -106,10 +106,16 @@ defmodule Task1 do
   def simplify_mul({:num, n1}, {:num, n2}) do {:num, n1*n2} end
   def simplify_mul({:float, f}, {:num, n}) do {:float, f*n} end #-------------------------
   def simplify_mul({:num, n}, {:float, f}) do {:float, f*n} end #-------------------------
+  def simplify_mul({:float, n}, {:div, e1, e2}) when n == 0.5 do {:div, e1, {:mul, {:num, 2}, e2}} end #-------------------------
+  def simplify_mul({:div, e1, e2}, {:float, n}) when n == 0.5 do {:div, e1, {:mul, {:num, 2}, e2}} end #-------------------------
   def simplify_mul(e1, e2) do {:mul, e1, e2} end
 #helpers for exp
   def simplify_exp(_, {:num, 0}) do {:num, 1} end
   def simplify_exp(e, {:num, 1}) do {:num, e} end
+  def simplify_exp(e, {:float, n}) when n == 0.5 do {:sqrt, e} end
+  def simplify_exp(e, {:float, n}) when n == -0.5 do {:div, {:num,1}, {:sqrt, e}} end
+
+
   def simplify_exp({:num, n1}, {:num, n2}) do {:num, :math.pow(n1, n2)} end
   def simplify_exp(e1, e2) do {:exp, e1, e2} end
 #helpers for div
@@ -123,11 +129,13 @@ defmodule Task1 do
   def pprint({:num, n}) do "#{n}" end
   def pprint({:var, v}) do "#{v}" end
   def pprint({:add, e1, e2}) do "(#{pprint(e1)} + #{pprint(e2)})" end
-  def pprint({:mul, e1, e2}) do "(#{pprint(e1)} * #{pprint(e2)})" end
+  def pprint({:mul, {:var, v}, {:num, n}}) do "#{n}#{v}" end
+  def pprint({:mul, {:num, n}, {:var, v}}) do "#{n}#{v}" end
+  def pprint({:mul, e1, e2}) do "#{pprint(e1)} * #{pprint(e2)}" end
   def pprint({:exp, e1, e2}) do "#{pprint(e1)}^#{pprint(e2)}" end
   def pprint({:ln, e}) do "ln(#{pprint(e)})" end
-  def pprint({:div, 1, e2}) do "(1/(#{pprint(e2)}))" end
-  def pprint({:div, e1, e2}) do "(#{pprint(e1)}/(#{pprint(e2)}))" end
+  def pprint({:div, 1, e2}) do "(1/#{pprint(e2)})" end
+  def pprint({:div, e1, e2}) do "(#{pprint(e1)}/#{pprint(e2)})" end
   def pprint({:sqrt, e}) do "sqrt(#{pprint(e)})" end
   def pprint({:float, f}) do "#{f}" end #------------------------------------------
   def pprint({:sin, e}) do "sin(#{pprint(e)})" end
@@ -147,6 +155,7 @@ defmodule Task1 do
     IO.write("Derivative: #{pprint(e2)}\n")
     IO.write("Simplified: #{pprint( simplify(e2) )}\n")
     IO.write("\n")
+    :ok
   end
 
   def io_write_expr(e1, e2, e3) do
@@ -155,6 +164,7 @@ defmodule Task1 do
     IO.write("Simplified: #{pprint( simplify(e2) )}\n")
     IO.write("Calculated: #{pprint( simplify(e3) )}\n")
     IO.write("\n")
+    :ok
   end
 
   #Vi kör ett test på 2x + 3 från innan.
@@ -198,6 +208,7 @@ defmodule Task1 do
     e5 = {:ln, {:add, {:var, :x}, {:num, 3}}}
     d5 = derive(e5, :x)
     io_write_expr(e5, d5)
+    :ok
   end
 
   def test_sqrt() do
@@ -209,14 +220,18 @@ defmodule Task1 do
     d2 = derive(e2, :x)
     io_write_expr(e2, d2)
 
-    e3 = {:sqrt, {:add, {:var, :x}, {:num, 3}}}
+    e3 =  {:sqrt, {:var, :c}}
     d3 = derive(e3, :x)
     io_write_expr(e3, d3)
 
-    e4 = {:sqrt,{:mul, {:num,2}, {:var, :x}}}
+    e4 = {:sqrt, {:add, {:var, :x}, {:num, 3}}}
     d4 = derive(e4, :x)
     io_write_expr(e4, d4)
 
+    e5 = {:sqrt,{:mul, {:num,2}, {:var, :x}}}
+    d5 = derive(e5, :x)
+    io_write_expr(e5, d5)
+    :ok
   end
 
   def test_div() do
@@ -238,6 +253,7 @@ defmodule Task1 do
     IO.write("Derivative: #{pprint(d4)}\n")
     #IO.write("Simplified: #{pprint( simplify(d4) )}\n") #not working
     IO.write("\n")
+    :ok
   end
 
 
@@ -260,6 +276,7 @@ defmodule Task1 do
     IO.write("Derivative: #{pprint(d4)}\n")
     #IO.write("Simplified: #{pprint( simplify(d4) )}\n") #not working
     IO.write("\n")
+    :ok
   end
 
   def test_final() do
@@ -272,6 +289,7 @@ defmodule Task1 do
           }
     d1 = derive(e1, :x)
     io_write_expr(e1, d1)
+    :ok
   end
 
 
