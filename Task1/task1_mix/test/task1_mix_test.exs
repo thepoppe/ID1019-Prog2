@@ -9,4 +9,17 @@ defmodule Task1MixTest do
   test "test_div" do
     Task1.test_div()
   end
+  test "test_ln" do
+    Task1.test_ln()
+  end
+
+  test "test_all" do
+    Task1.test1()
+    Task1.test2()
+    Task1.test_ln()
+    Task1.test_sqrt()
+    Task1.test_div()
+    Task1.test_sin()
+
+  end
 end

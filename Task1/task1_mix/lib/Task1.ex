@@ -126,6 +126,7 @@ defmodule Task1 do
   def pprint({:mul, e1, e2}) do "(#{pprint(e1)} * #{pprint(e2)})" end
   def pprint({:exp, e1, e2}) do "#{pprint(e1)}^#{pprint(e2)}" end
   def pprint({:ln, e}) do "ln(#{pprint(e)})" end
+  def pprint({:div, 1, e2}) do "(1/(#{pprint(e2)}))" end
   def pprint({:div, e1, e2}) do "(#{pprint(e1)}/(#{pprint(e2)}))" end
   def pprint({:sqrt, e}) do "sqrt(#{pprint(e)})" end
   def pprint({:float, f}) do "#{f}" end #------------------------------------------
@@ -141,7 +142,20 @@ defmodule Task1 do
   def calc( {:exp, e1, e2}, v, n) do {:exp, calc(e1, v, n), calc(e2, v, n)} end
 
 
+  def io_write_expr(e1, e2) do
+    IO.write("Expression: #{pprint(e1)}\n")
+    IO.write("Derivative: #{pprint(e2)}\n")
+    IO.write("Simplified: #{pprint( simplify(e2) )}\n")
+    IO.write("\n")
+  end
 
+  def io_write_expr(e1, e2, e3) do
+    IO.write("Expression: #{pprint(e1)}\n")
+    IO.write("Derivative: #{pprint(e2)}\n")
+    IO.write("Simplified: #{pprint( simplify(e2) )}\n")
+    IO.write("Calculated: #{pprint( simplify(e3) )}\n")
+    IO.write("\n")
+  end
 
   #Vi kör ett test på 2x + 3 från innan.
   #Expected result 2 ->
@@ -149,10 +163,7 @@ defmodule Task1 do
     e = {:add, {:mul, {:num, 2}, {:var, :x}}, {:num, 3}}
     d = derive(e, :x)
     c = calc(d, :x, 5)
-    IO.write("Expression: #{pprint(e)}\n")
-    IO.write("Derivative: #{pprint(d)}\n")
-    IO.write("Simplified: #{pprint( simplify(d) )}\n")
-    IO.write("Calculated: #{pprint( simplify(c) )}\n")
+    io_write_expr(e, d, c)
     :ok
   end
 
@@ -162,10 +173,7 @@ defmodule Task1 do
     e = {:add, {:exp, {:var, :x}, {:num, 3}}, {:num, 4}}
     d = derive(e, :x)
     c = calc(d, :x, 4)
-    IO.write("Expression: #{pprint(e)}\n")
-    IO.write("Derivative: #{pprint(d)}\n")
-    IO.write("Simplified: #{pprint( simplify(d) )}\n")
-    IO.write("Calculated: #{pprint( simplify(c) )}\n")
+    io_write_expr(e, d, c)
     :ok
   end
 
@@ -173,82 +181,57 @@ defmodule Task1 do
   def test_ln() do
     e1 = {:ln, {:var, :x}}
     d1 = derive(e1, :x)
-    IO.write("Expression: #{pprint(e1)}\n")
-    IO.write("Derivative: #{pprint(d1)}\n")
-    IO.write("Simplified: #{pprint( simplify(d1) )}\n")
-    IO.write("\n")
+    io_write_expr(e1, d1)
+
     e2 = {:ln, {:num, 2}}
     d2 = derive(e2, :x)
-    IO.write("Expression: #{pprint(e2)}\n")
-    IO.write("Derivative: #{pprint(d2)}\n")
-    IO.write("Simplified: #{pprint( simplify(d2) )}\n")
-    IO.write("\n")
+    io_write_expr(e2, d2)
+
     e3 = {:ln, {:var, :c}}
     d3 = derive(e3, :x)
-    IO.write("Expression: #{pprint(e3)}\n")
-    IO.write("Derivative: #{pprint(d3)}\n")
-    IO.write("Simplified: #{pprint( simplify(d3) )}\n")
-    IO.write("\n")
+    io_write_expr(e3, d3)
+
     e4 = {:ln,{:mul, {:num,2}, {:var, :x}}}
     d4 = derive(e4, :x)
-    IO.write("Expression: #{pprint(e4)}\n")
-    IO.write("Derivative: #{pprint(d4)}\n")
-    IO.write("Simplified: #{pprint( simplify(d4) )}\n")
-    IO.write("\n")
+    io_write_expr(e4, d4)
+
     e5 = {:ln, {:add, {:var, :x}, {:num, 3}}}
     d5 = derive(e5, :x)
-    IO.write("Expression: #{pprint(e5)}\n")
-    IO.write("Derivative: #{pprint(d5)}\n")
-    IO.write("Simplified: #{pprint( simplify(d5) )}\n")
-    IO.write("\n")
+    io_write_expr(e5, d5)
   end
 
   def test_sqrt() do
     e1 = {:sqrt, {:var, :x}}
     d1 = derive(e1, :x)
-    IO.write("Expression: #{pprint(e1)}\n")
-    IO.write("Derivative: #{pprint(d1)}\n")
-    IO.write("Simplified: #{pprint( simplify(d1) )}\n")
-    IO.write("\n")
+    io_write_expr(e1, d1)
+
     e2 = {:sqrt, {:num, 1}}
     d2 = derive(e2, :x)
-    IO.write("Expression: #{pprint(e2)}\n")
-    IO.write("Derivative: #{pprint(d2)}\n")
-    IO.write("Simplified: #{pprint( simplify(d2) )}\n")
-    IO.write("\n")
+    io_write_expr(e2, d2)
+
     e3 = {:sqrt, {:add, {:var, :x}, {:num, 3}}}
     d3 = derive(e3, :x)
-    IO.write("Expression: #{pprint(e3)}\n")
-    IO.write("Derivative: #{pprint(d3)}\n")
-    IO.write("Simplified: #{pprint( simplify(d3) )}\n")
-    IO.write("\n")
+    io_write_expr(e3, d3)
+
     e4 = {:sqrt,{:mul, {:num,2}, {:var, :x}}}
     d4 = derive(e4, :x)
-    IO.write("Expression: #{pprint(e4)}\n")
-    IO.write("Derivative: #{pprint(d4)}\n")
-    IO.write("Simplified: #{pprint( simplify(d4) )}\n")
-    IO.write("\n")
+    io_write_expr(e4, d4)
+
   end
 
   def test_div() do
     e1 = {:div, {:num, 1}, {:var, :x}}
     d1 = derive(e1, :x)
-    IO.write("Expression: #{pprint(e1)}\n")
-    IO.write("Derivative: #{pprint(d1)}\n")
-    IO.write("Simplified: #{pprint( simplify(d1) )}\n")
-    IO.write("\n")
+    io_write_expr(e1, d1)
+
     e2 = {:div, {:num, 1}, {:mul, {:num,2}, {:var, :x}}}
     d2 = derive(e2, :x)
-    IO.write("Expression: #{pprint(e2)}\n")
-    IO.write("Derivative: #{pprint(d2)}\n")
-    IO.write("Simplified: #{pprint( simplify(d2) )}\n")
-    IO.write("\n")
+    io_write_expr(e2, d2)
+
     e3 = {:div, {:num, 1}, {:add, {:num,1}, {:var, :x}}}
     d3 = derive(e3, :x)
-    IO.write("Expression: #{pprint(e3)}\n")
-    IO.write("Derivative: #{pprint(d3)}\n")
-    IO.write("Simplified: #{pprint( simplify(d3) )}\n")
-    IO.write("\n")
+    io_write_expr(e3, d3)
+
     e4 = {:div, {:num, 1}, {:exp, {:var, :x}, {:num, 2}}}
     d4 = derive(e4, :x)
     IO.write("Expression: #{pprint(e4)}\n")
@@ -261,22 +244,16 @@ defmodule Task1 do
   def test_sin() do
     e1 = {:sin, {:var, :x}}
     d1 = derive(e1, :x)
-    IO.write("Expression: #{pprint(e1)}\n")
-    IO.write("Derivative: #{pprint(d1)}\n")
-    IO.write("Simplified: #{pprint( simplify(d1) )}\n")
-    IO.write("\n")
+    io_write_expr(e1, d1)
+
     e2 = {:sin, {:mul, {:num,2}, {:var, :x}}}
     d2 = derive(e2, :x)
-    IO.write("Expression: #{pprint(e2)}\n")
-    IO.write("Derivative: #{pprint(d2)}\n")
-    IO.write("Simplified: #{pprint( simplify(d2) )}\n")
-    IO.write("\n")
+    io_write_expr(e2, d2)
+
     e3 = {:sin, {:add, {:num,1}, {:var, :x}}}
     d3 = derive(e3, :x)
-    IO.write("Expression: #{pprint(e3)}\n")
-    IO.write("Derivative: #{pprint(d3)}\n")
-    IO.write("Simplified: #{pprint( simplify(d3) )}\n")
-    IO.write("\n")
+    io_write_expr(e3, d3)
+
     e4 = {:sin, {:exp, {:var, :x}, {:num, 2}}}
     d4 = derive(e4, :x)
     IO.write("Expression: #{pprint(e4)}\n")
@@ -294,9 +271,7 @@ defmodule Task1 do
               }
           }
     d1 = derive(e1, :x)
-    IO.write("Expression: #{pprint(e1)}\n")
-    IO.write("Derivative: #{pprint(d1)}\n")
-    IO.write("Simplified: #{pprint( simplify(d1) )}\n")
+    io_write_expr(e1, d1)
   end
 
 
