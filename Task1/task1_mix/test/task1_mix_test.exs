@@ -20,6 +20,8 @@ defmodule Task1MixTest do
     Task1.test_sqrt()
     Task1.test_div()
     Task1.test_sin()
+    Task1.test_final()
+    Task1.test_ass_mul()
 
   end
 end
