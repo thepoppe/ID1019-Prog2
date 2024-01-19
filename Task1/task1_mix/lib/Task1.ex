@@ -75,7 +75,7 @@ defmodule Task1 do
   end
   #general
   def derive({:div, {:num, 1}, e}, x) do
-    {:mul, derive(e, x), derive({:exp, e, {:num, -1}}, x)}
+     derive({:exp, e, {:num, -1}}, x)
   end
 
 
@@ -280,13 +280,18 @@ defmodule Task1 do
   end
 
   def test_final() do
-    e1 =  {:div,
-            {:num, 1},
-              {:sin , {:mul,
-                    {:num, 2}, {:var, :x}
-                    }
-              }
-          }
+    e1 =
+            {:exp,
+              {:sin,
+                {:mul, {:num, 2}, {:var, :x}}},
+              {:num,-1}}
+    e2 =  {:div,
+              {:num, 1},
+                {:sin , {:mul,
+                      {:num, 2}, {:var, :x}
+                      }
+                }
+            }
     d1 = derive(e1, :x)
     io_write_expr(e1, d1)
     :ok
