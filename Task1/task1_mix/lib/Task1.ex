@@ -131,7 +131,7 @@ defmodule Task1 do
   def pprint({:mul, {:var, v}, {:num, n}}) do "#{n}#{v}" end
   def pprint({:mul, {:num, n}, {:var, v}}) do "#{n}#{v}" end
   def pprint({:mul, e1, e2}) do "#{pprint(e1)} * #{pprint(e2)}" end
-  def pprint({:exp, e, {:num, n}} )when n < 0 do "(1/#{pprint({:exp, e, {:num, n*-1} })})" end
+  def pprint({:exp, e, {:num, n}} )when n < 0 do "(1/(#{pprint({:exp, e, {:num, n*-1} })}))" end
   def pprint({:exp, e1, e2}) do "#{pprint(e1)}^#{pprint(e2)}" end
   def pprint({:ln, e}) do "ln(#{pprint(e)})" end
   def pprint({:div, 1, e2}) do "1/(#{pprint(e2)})" end
@@ -294,6 +294,12 @@ defmodule Task1 do
             }
     d1 = derive(e1, :x)
     io_write_expr(e1, d1)
+
+    test= {:div, {:num, 1}, {:mul,
+      {:num, 2}, {:sin,
+         {:add, {:var, :x}, {:num, 1}}}}}
+    res = derive(test, :x)
+    io_write_expr(test, res)
     :ok
   end
 
