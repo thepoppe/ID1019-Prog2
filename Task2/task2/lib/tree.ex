@@ -1,7 +1,8 @@
 defmodule EnvTree do
-  #@type c_node() :: {:node, atom(), number(), branch(), branch()}
-  #@type leaf() :: {atom(), number()}
-  #@type branch() :: node() | leaf() | nil
+  @type c_node() :: {:node, atom(), number(), branch(), branch()}
+  @type branch() :: c_node() | nil
+
+  def new do nil end
 
   def add(nil, key, value) do {:node, key, value, nil, nil} end
   def add({:node, key, _, left, right}, key, value) do  {:node, key, value, left, right} end

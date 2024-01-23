@@ -24,13 +24,13 @@ defmodule Task2Test do
     res = EnvList.lookup(map, :x)
     IO.inspect("lookup :x : #{inspect(res)}")
 
-    map = EnvList.remove(:x, map)
+    map = EnvList.remove(map, :x )
     IO.inspect("remove :x : #{inspect(map)}")
-    map = EnvList.remove(:a, map)
+    map = EnvList.remove(map, :a)
     IO.inspect("remove :a : #{inspect(map)}")
-    map = EnvList.remove(:b, map)
+    map = EnvList.remove(map, :b)
     IO.inspect("remove :b : #{inspect(map)}")
-    map = EnvList.remove(:c, map)
+    map = EnvList.remove(map, :c)
     IO.inspect("remove :c : #{inspect(map)}")
     :done
   end

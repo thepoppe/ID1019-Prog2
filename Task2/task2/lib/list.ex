@@ -23,9 +23,9 @@ defmodule EnvList do
     end
   end
 
-  def remove(_, []) do [] end
-  def remove(key, [{key, _}|rest]) do rest end
-  def remove(key, [h|rest]) do [h|remove(key, rest)] end
+  def remove([], _) do [] end
+  def remove([{key, _}|rest], key) do rest end
+  def remove([h|rest], key) do [h|remove(rest, key)] end
 
 
 
