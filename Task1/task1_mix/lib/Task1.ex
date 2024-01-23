@@ -56,7 +56,7 @@ defmodule Task1 do
       #{:num, _} -> {:num, 0}
       #{:var, :x} -> {:div, 1, e}
       #{:var, :_} -> {:num, 0}
-      _ -> {:mul, {:div, 1, e}, derive(e,x)}
+      _ -> {:mul, {:div,{:num, 1}, e}, derive(e,x)}
     end
   end
 
@@ -64,20 +64,15 @@ defmodule Task1 do
 
   #derivera sqrt(f(x)) med avseende på x
   def derive({:sqrt, e}, x) do
-    derive({:exp, e, {:float, 0.5} }, x)#float needed?
+    derive({:exp, e, {:float, 0.5}}, x)#float needed?
   end
 
 
   #derivera 1/f(x) med avseende på x
-  #case x^n ... is there a better way?
-  def derive({:div, {:num, 1}, {:exp, {:var, x}, {:num, n}}}, x) do
-    {:mul, {:num, -n}, {:div, {:num, 1}, {:exp, {:var, x}, {:num, n + 1}}}}
-  end
   #general
   def derive({:div, {:num, 1}, e}, x) do
      derive({:exp, e, {:num, -1}}, x)
   end
-
 
 
 
@@ -91,15 +86,16 @@ defmodule Task1 do
   def simplify({:add, e1, e2}) do simplify_add(simplify(e1), simplify(e2)) end
   def simplify({:mul, e1, e2}) do simplify_mul(simplify(e1), simplify(e2)) end
   def simplify({:exp, e1, e2}) do simplify_exp(simplify(e1), simplify(e2)) end
-  def simplify({:div, {:num, 1}, e}) do simplify_div({:num, 1}, simplify(e)) end
+  def simplify({:div, e1, e2}) do simplify_div(simplify(e1), simplify(e2)) end
   def simplify(e) do e end
   #helpers for add
+  @spec simplify_add(any(), any()) :: any()
   def simplify_add(e1, {:num, 0}) do e1 end
   def simplify_add({:num, 0}, e2) do e2 end
   def simplify_add({:num, n1}, {:num, n2}) do {:num, n1+n2} end
   def simplify_add(e1, e2) do {:add, e1, e2} end
 #helpers for mul
-  def simplify_mul(_, {:num, 0}) do {:num, 0} end
+  def simplify_mul(_, {:num, n}) when n==0 do {:num, 0} end
   def simplify_mul({:num, 0}, _) do {:num, 0} end
   def simplify_mul(e1, {:num, 1}) do e1 end
   def simplify_mul({:num, 1}, e2) do e2 end
@@ -108,18 +104,21 @@ defmodule Task1 do
   def simplify_mul({:num, n}, {:float, f}) do {:float, f*n} end #-------------------------
   def simplify_mul({:float, n}, {:div, e1, e2}) when n == 0.5 do {:div, e1, {:mul, {:num, 2}, e2}} end #-------------------------
   def simplify_mul({:div, e1, e2}, {:float, n}) when n == 0.5 do {:div, e1, {:mul, {:num, 2}, e2}} end #-------------------------
+  def simplify_mul({:num, n1}, {:mul, {:num, n2}, e}) do {:mul, {:num, n1*n2}, e} end
+  def simplify_mul({:num, n1}, {:mul, e, {:num, n2}}) do {:mul, {:num, n1*n2}, e} end
   def simplify_mul(e1, e2) do {:mul, e1, e2} end
 #helpers for exp
   def simplify_exp(_, {:num, 0}) do {:num, 1} end
-  def simplify_exp(e, {:num, 1}) do {:num, e} end
+  def simplify_exp(e, {:num, 1}) do e end # FÖRÄNDRING---------------------------------------------------------------------
   def simplify_exp(e, {:float, n}) when n == 0.5 do {:sqrt, e} end
   def simplify_exp(e, {:float, n}) when n == -0.5 do {:div, {:num,1}, {:sqrt, e}} end
-
-
   def simplify_exp({:num, n1}, {:num, n2}) do {:num, :math.pow(n1, n2)} end
+  def simplify_exp({:exp, e, {:num, n1}}, {:num, n2}) do {:exp, e, {:num, n1*n2}} end
   def simplify_exp(e1, e2) do {:exp, e1, e2} end
 #helpers for div
   def simplify_div({:num, 1}, {:var, x}) do {:div, {:num, 1}, {:var, x}} end
+  def simplify_div({:var, x}, {:num, 1}) do  {:var, x} end
+  def simplify_div(e1, e2) do {:div, e1, e2} end
 
 
 
@@ -132,10 +131,11 @@ defmodule Task1 do
   def pprint({:mul, {:var, v}, {:num, n}}) do "#{n}#{v}" end
   def pprint({:mul, {:num, n}, {:var, v}}) do "#{n}#{v}" end
   def pprint({:mul, e1, e2}) do "#{pprint(e1)} * #{pprint(e2)}" end
+  def pprint({:exp, e, {:num, n}} )when n < 0 do "(1/(#{pprint({:exp, e, {:num, n*-1} })}))" end
   def pprint({:exp, e1, e2}) do "#{pprint(e1)}^#{pprint(e2)}" end
   def pprint({:ln, e}) do "ln(#{pprint(e)})" end
-  def pprint({:div, 1, e2}) do "(1/#{pprint(e2)})" end
-  def pprint({:div, e1, e2}) do "(#{pprint(e1)}/#{pprint(e2)})" end
+  def pprint({:div, 1, e2}) do "1/(#{pprint(e2)})" end
+  def pprint({:div, e1, e2}) do "#{pprint(e1)}/(#{pprint(e2)})" end
   def pprint({:sqrt, e}) do "sqrt(#{pprint(e)})" end
   def pprint({:float, f}) do "#{f}" end #------------------------------------------
   def pprint({:sin, e}) do "sin(#{pprint(e)})" end
@@ -224,13 +224,13 @@ defmodule Task1 do
     d3 = derive(e3, :x)
     io_write_expr(e3, d3)
 
-    e4 = {:sqrt, {:add, {:var, :x}, {:num, 3}}}
-    d4 = derive(e4, :x)
-    io_write_expr(e4, d4)
-
     e5 = {:sqrt,{:mul, {:num,2}, {:var, :x}}}
     d5 = derive(e5, :x)
     io_write_expr(e5, d5)
+
+    e4 = {:sqrt, {:add, {:var, :x}, {:num, 3}}}
+    d4 = derive(e4, :x)
+    io_write_expr(e4, d4)
     :ok
   end
 
@@ -251,7 +251,7 @@ defmodule Task1 do
     d4 = derive(e4, :x)
     IO.write("Expression: #{pprint(e4)}\n")
     IO.write("Derivative: #{pprint(d4)}\n")
-    #IO.write("Simplified: #{pprint( simplify(d4) )}\n") #not working
+    IO.write("Simplified: #{pprint( simplify(d4) )}\n") #not working
     IO.write("\n")
     :ok
   end
@@ -274,7 +274,7 @@ defmodule Task1 do
     d4 = derive(e4, :x)
     IO.write("Expression: #{pprint(e4)}\n")
     IO.write("Derivative: #{pprint(d4)}\n")
-    #IO.write("Simplified: #{pprint( simplify(d4) )}\n") #not working
+    IO.write("Simplified: #{pprint( simplify(d4) )}\n") #not working
     IO.write("\n")
     :ok
   end
@@ -285,7 +285,7 @@ defmodule Task1 do
               {:sin,
                 {:mul, {:num, 2}, {:var, :x}}},
               {:num,-1}}
-    e2 =  {:div,
+    e1 =  {:div,
               {:num, 1},
                 {:sin , {:mul,
                       {:num, 2}, {:var, :x}
@@ -294,7 +294,49 @@ defmodule Task1 do
             }
     d1 = derive(e1, :x)
     io_write_expr(e1, d1)
+
+    test= {:div, {:num, 1}, {:mul,
+      {:num, 2}, {:sin,
+         {:add, {:var, :x}, {:num, 1}}}}}
+    res = derive(test, :x)
+    io_write_expr(test, res)
     :ok
+  end
+
+
+  def test_ass_mul() do
+    e = {:mul, {:num,3}, {:mul, {:num, 2}, {:var, :x}}}
+
+    IO.write("BEFORE: #{pprint(e)}\n")
+    IO.write("AFTER: #{pprint(simplify(e))}\n")
+
+    e2 = {:mul, {:num, 3}, {:mul, {:num, 2}, {:exp, {:var, :x}, {:num, 2}}}}
+    IO.write("BEFORE: #{pprint(e2)}\n")
+    IO.write("AFTER: #{pprint(simplify(e2))}\n")
+
+    e3 = {:mul, {:num, 3}, {:mul, {:exp, {:var, :x}, {:num, 2}}, {:num, 2}}}
+    IO.write("BEFORE: #{pprint(e3)}\n")
+    IO.write("AFTER: #{pprint(simplify(e3))}\n")
+
+    e3 = {:mul, {:num, 3}, {:mul, {:num, 2}, {:div, {:num, 1}, {:var, :x}}}}
+    IO.write("BEFORE: #{pprint(e3)}\n")
+    IO.write("AFTER: #{pprint(simplify(e3))}\n")
+    e3 = {:mul, {:num, 3}, {:mul, {:div, {:num, 1}, {:var, :x}}, {:num, 2}}}
+    IO.write("BEFORE: #{pprint(e3)}\n")
+    IO.write("AFTER: #{pprint(simplify(e3))}\n")
+
+    e3 = {:mul, {:num, 3}, {:mul, {:num, -2}, {:sin,{:var, :x}}}}
+    IO.write("BEFORE: #{pprint(e3)}\n")
+    IO.write("AFTER: #{pprint(simplify(e3))}\n")
+    e3 = {:mul, {:num, 3}, {:mul, {:sin, {:var, :x}}, {:num, -2}}}
+    IO.write("BEFORE: #{pprint(e3)}\n")
+    IO.write("AFTER: #{pprint(simplify(e3))}\n")
+
+    e3 = {:mul, {:mul, {:num, 2}, {:sin, {:var, :x}}}, {:mul, {:num, -1}, {:exp, {:var, :x}, {:num, 2}}} }
+    IO.write("BEFORE: #{pprint(e3)}\n")
+    IO.write("AFTER: #{pprint(simplify(e3))}\n")
+
+
   end
 
 
