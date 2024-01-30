@@ -15,14 +15,20 @@ test "main" do
   expr6 = {:div, {:mul, {:var, :z}, {:num, 10}}, {:num, 2}} # (z*10) / 2 => (3*10)/2 = 15
   expr7 = {:mul, {:add, {:num, 3}, {:var, :x}}, {:div, {:num, 6}, {:q, 2, 3}}} # (3+x) * (6/(2/3)) => (3+10) *  (6/(2/3)) = 117
   expr8 = {:add, {:mul, {:num, 2}, {:var, :y}}, {:div, {:add, {:var, :x}, {:num, 3}}, {:q, 5, 2}}} # 2y + (x+3)/(5/2) => 2*5 + (10+3)/(5/2) = 76/5
-  assert((Task3.main(expr1,env) == {:ok, "7/2"}), "ISSUES1")
-  assert((Task3.main(expr2,env) == {:ok, "47/2"}), "ISSUES2")
+  expr9 = {:div,
+  {:mul, {:mul, {:num, 3}, {:var, :x}}, {:sub, {:mul, {:num, 4}, {:var, :y}}, {:var, :z}}},
+  {:add, {:mul, {:q, 5, 2}, {:var, :x}}, {:div, {:add, {:num, 10}, {:var, :z}}, {:num, 2}}}}
+  # (3*x * (4*y - z)) / ((5 / 2)*x + (10 + z) / 2) = (30 + (20-3)) / ((5/2)*10 + (10+3)/2)) = 340/21 = 1020/63 goodenough
+
+  assert((Task3.main(expr1,env) == {:rational, "7/2"}), "ISSUES1")
+  assert((Task3.main(expr2,env) == {:rational, "47/2"}), "ISSUES2")
   assert((Task3.main(expr3,env) == {:ok, "13"}), "ISSUES3")
   assert((Task3.main(expr4,env) == {:ok, "8"}), "ISSUES4")
   assert((Task3.main(expr5,env) == {:error, ":a not found"}), "ISSUES5")
-  assert((Task3.main(expr6,env) == {:ok,  15}), "ISSUES6")
-  assert((Task3.main(expr7,env) == {:ok, {:ok, 117}}), "ISSUES7")
-  assert((Task3.main(expr8,env) == {:ok, {:q, 76, 5}}), "ISSUES8")
+  assert((Task3.main(expr6,env) == {:ok,  "15"}), "ISSUES6")
+  assert((Task3.main(expr7,env) == {:ok, "117"}), "ISSUES7")
+  assert((Task3.main(expr8,env) == {:rational, "76/5"}), "ISSUES8")
+  assert((Task3.main(expr9,env) == {:rational, "340/21"}), "ISSUESHARD")
 
 end
 end
