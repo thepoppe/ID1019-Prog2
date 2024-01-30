@@ -10,6 +10,7 @@ defmodule Task3 do
   @type literal() :: {:num, number()}
   | {:var, atom()}
   | {:q, number(), number()}
+  | {:rational, literal()}
 
   def main(expr, env) do
     {status, ans} = eval(expr, env)
