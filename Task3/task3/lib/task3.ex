@@ -16,12 +16,6 @@ defmodule Task3 do
     {status, pprint(reduce(ans))}
   end
 
-  def reduce({:q, top, bot}) when rem(top,2) == 0 and rem(bot,2) == 0 do reduce({:q, div(top,2), div(bot,2)}) end
-  def reduce({:q, top, bot}) when rem(top,3) == 0 and rem(bot,3) == 0 do reduce({:q, div(top,3), div(bot,3)}) end
-  def reduce({:q, top, bot}) when rem(top,5) == 0 and rem(bot,5) == 0 do reduce({:q, div(top,5), div(bot,5)}) end
-  def reduce({:q, top, bot}) when rem(top,7) == 0 and rem(bot,7) == 0 do reduce({:q, div(top,7), div(bot,7)}) end
-  def reduce(literal) do literal end
-
 
   def eval({:num, n}, _) do {:ok, n} end
   def eval({:q, n1,n2}, _) do div_(n1, n2) end
@@ -47,9 +41,6 @@ defmodule Task3 do
             add_rational(s1, s2)
         end
     end
-
-
-    #add(eval(e1, env), eval(e2, env))
   end
   def eval({:sub, e1, e2}, env) do
     case eval(e1, env) do
@@ -72,7 +63,6 @@ defmodule Task3 do
             sub_rational(s1, s2)
         end
     end
-    #sub(eval(e1, env), eval(e2, env))
   end
   def eval({:mul, e1, e2}, env) do
     case eval(e1, env) do
@@ -95,7 +85,6 @@ defmodule Task3 do
             mul_rational(s1, s2)
         end
     end
-    #mul(eval(e1, env), eval(e2, env))
   end
   def eval({:div, e1, e2}, env) do
     case eval(e1, env) do
@@ -118,7 +107,6 @@ defmodule Task3 do
             div_rational(s1, s2)
         end
     end
-  #div_(eval(e1, env), eval(e2, env))  end
   end
 
   def add(e1, e2) do
@@ -175,6 +163,13 @@ defmodule Task3 do
   def div_rational({:q, r1, r2}, {:q, r3, r4}) do div_(r1*r4, r2*r3) end
   def div_rational(n1, {:q, r1, r2}) do div_(n1*r2, r1) end
   def div_rational({:q, r1, r2}, n1) do div_(r1, r2*n1) end
+
+
+  def reduce({:q, top, bot}) when rem(top,2) == 0 and rem(bot,2) == 0 do reduce({:q, div(top,2), div(bot,2)}) end
+  def reduce({:q, top, bot}) when rem(top,3) == 0 and rem(bot,3) == 0 do reduce({:q, div(top,3), div(bot,3)}) end
+  def reduce({:q, top, bot}) when rem(top,5) == 0 and rem(bot,5) == 0 do reduce({:q, div(top,5), div(bot,5)}) end
+  def reduce({:q, top, bot}) when rem(top,7) == 0 and rem(bot,7) == 0 do reduce({:q, div(top,7), div(bot,7)}) end
+  def reduce(literal) do literal end
 
   def pprint({:ok, num}) do "#{num}" end
   def pprint({:var, v}) do ":#{v}" end
