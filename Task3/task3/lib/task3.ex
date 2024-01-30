@@ -14,7 +14,7 @@ defmodule Task3 do
 
   def main(expr, env) do
     {status, ans} = eval(expr, env)
-    {status, pprint(reduce(ans))}
+    {status, expr_to_string(reduce(ans))}
   end
 
 
@@ -23,11 +23,11 @@ defmodule Task3 do
   def eval({:var, v}, env) do Map.fetch(env, v) end
   def eval({:add, e1, e2}, env) do
     case eval(e1, env) do
-      :error -> {:error, "#{pprint(e1)} not found"}
+      :error -> {:error, "#{expr_to_string(e1)} not found"}
       {:error, e} -> {:error, e}
       {:ok, s1} ->
         case eval(e2, env) do
-          :error -> {:error, "#{pprint(e2)} not found"}
+          :error -> {:error, "#{expr_to_string(e2)} not found"}
           {:error, e} -> {:error, e}
           {:ok, s2} -> add(s1, s2)
           {:rational, s2} -> #e2 is rational
@@ -35,7 +35,7 @@ defmodule Task3 do
         end
       {:rational, s1} -> #e1 is rational
         case eval(e2,env) do
-          :error -> {:error, "#{pprint(e2)} not found"}
+          :error -> {:error, "#{expr_to_string(e2)} not found"}
           {:error, e} -> {:error, e}
           {:ok, s2} -> add_rational(e1, s2)
           {:rational, s2} -> #e2 is rational
@@ -45,11 +45,11 @@ defmodule Task3 do
   end
   def eval({:sub, e1, e2}, env) do
     case eval(e1, env) do
-      :error -> {:error, "#{pprint(e1)} not found"}
+      :error -> {:error, "#{expr_to_string(e1)} not found"}
       {:error, e} -> {:error, e}
       {:ok, s1} ->
         case eval(e2, env) do
-          :error -> {:error, "#{pprint(e2)} not found"}
+          :error -> {:error, "#{expr_to_string(e2)} not found"}
           {:error, e} -> {:error, e}
           {:ok, s2} -> sub(s1, s2)
           {:rational, s2} -> #e2 is rational
@@ -57,7 +57,7 @@ defmodule Task3 do
         end
       {:rational, s1} -> #e1 is rational
         case eval(e2,env) do
-          :error -> {:error, "#{pprint(e2)} not found"}
+          :error -> {:error, "#{expr_to_string(e2)} not found"}
           {:error, e} -> {:error, e}
           {:ok, s2} -> sub_rational(s1, s2)
           {:rational, s2} -> #e2 is rational
@@ -67,11 +67,11 @@ defmodule Task3 do
   end
   def eval({:mul, e1, e2}, env) do
     case eval(e1, env) do
-      :error -> {:error, "#{pprint(e1)} not found"}
+      :error -> {:error, "#{expr_to_string(e1)} not found"}
       {:error, e} -> {:error, e}
       {:ok, s1} ->
         case eval(e2, env) do
-          :error -> {:error, "#{pprint(e2)} not found"}
+          :error -> {:error, "#{expr_to_string(e2)} not found"}
           {:error, e} -> {:error, e}
           {:ok, s2} -> mul(s1, s2)
           {:rational, s2} -> #e2 is rational
@@ -79,7 +79,7 @@ defmodule Task3 do
         end
       {:rational, s1} -> #e1 is rational
         case eval(e2,env) do
-          :error -> {:error, "#{pprint(e2)} not found"}
+          :error -> {:error, "#{expr_to_string(e2)} not found"}
           {:error, e} -> {:error, e}
           {:ok, s2} -> mul_rational(s1, s2)
           {:rational, s2} -> #e2 is rational
@@ -89,11 +89,11 @@ defmodule Task3 do
   end
   def eval({:div, e1, e2}, env) do
     case eval(e1, env) do
-      :error -> {:error, "#{pprint(e1)} not found"}
+      :error -> {:error, "#{expr_to_string(e1)} not found"}
       {:error, e} -> {:error, e}
       {:ok, s1} ->
         case eval(e2, env) do
-          :error -> {:error, "#{pprint(e2)} not found"}
+          :error -> {:error, "#{expr_to_string(e2)} not found"}
           {:error, e} -> {:error, e}
           {:ok, s2} -> div_(s1, s2)
           {:rational, s2} -> #e2 is rational
@@ -101,7 +101,7 @@ defmodule Task3 do
         end
       {:rational, s1} -> #e1 is rational
         case eval(e2,env) do
-          :error -> {:error, "#{pprint(e2)} not found"}
+          :error -> {:error, "#{expr_to_string(e2)} not found"}
           {:error, e} -> {:error, e}
           {:ok, s2} -> div_rational(s1, s2)
           {:rational, s2} -> #e2 is rational
@@ -157,7 +157,6 @@ defmodule Task3 do
   def mul_rational({:q, r1, r2}, {:q, r3, r4}) do div_(r1*r3, r2*r4) end
   def mul_rational(n1, {:q, r1, r2}) when rem(r1, n1) == 0 do div_( r1, div(r2, n1)) end
   def mul_rational(n1, {:q, r1, r2})  do div_( r1*n1, r2) end
-
   def mul_rational( {:q, r1, r2}, n1) when rem(r2, n1) == 0 do div_(r1, div(r2, n1)) end
   def mul_rational({:q, r1, r2}, n1)  do div_(r1*n1, r2) end
 
@@ -172,11 +171,11 @@ defmodule Task3 do
   def reduce({:q, top, bot}) when rem(top,7) == 0 and rem(bot,7) == 0 do reduce({:q, div(top,7), div(bot,7)}) end
   def reduce(literal) do literal end
 
-  def pprint({:ok, num}) do "#{num}" end
-  def pprint({:var, v}) do ":#{v}" end
-  def pprint({:q, n1, n2}) do "#{n1}/#{n2}" end
-  def pprint({:error, msg}) do "error, #{msg}" end
-  def pprint(:error) do ":error, expression could not be evaluated" end
-  def pprint(rest) do "#{rest}" end
+  def expr_to_string({:ok, num}) do "#{num}" end
+  def expr_to_string({:var, v}) do ":#{v}" end
+  def expr_to_string({:q, n1, n2}) do "#{n1}/#{n2}" end
+  def expr_to_string({:error, msg}) do "error, #{msg}" end
+  def expr_to_string(:error) do ":error, expression could not be evaluated" end
+  def expr_to_string(rest) do "#{rest}" end
 
 end
