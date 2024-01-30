@@ -2,7 +2,7 @@ defmodule Task3Test do
   use ExUnit.Case
   doctest Task3
 
-test "main" do
+test "main test" do
   env = Map.new()
   env = Map.put(env, :x, 10)
   env = Map.put(env, :y, 5)
