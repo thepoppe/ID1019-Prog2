@@ -1,7 +1,7 @@
 # eager, eval_clause, eval_match
 eval_expr ({:case,})
 
-eval cls([],:,) do :error) 
+eval cls([],_,) do :error) 
 
 eval_cls([{:cls, p, seq}| clauses], s, env) doo
     eval_match(p,s, scope(p,env)) do     ###### scope söker igenom en "env och ?plockar bort? och returnerar en mindre env

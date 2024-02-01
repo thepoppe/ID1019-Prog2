@@ -3,22 +3,35 @@ defmodule Eager do
   @type atm :: {:atm, atom}
   @type variable :: {:var, atom}
   @type cons :: {:cons, thing, thing}
-  @type env :: [any]
+  @type env :: [{atom, any}]
   @type ignore :: :ignore
+  @type params :: [variable]
+  @type free_vars :: [atom]
+
+  @type id :: any #?? id??
 
   @type expr :: atm | variable | cons
   @type pattern :: atm | variable | cons | ignore
+  @type match :: {:match, pattern, expr}
+
+  @type sequence :: [match]
+  @type closure :: {:closure, [variable], sequence, env}
+
   @type case_ :: {:case, expr, [clause]}
   @type clause :: { pattern, [expr]}
+  @type lambda :: {:lambda, params, free_vars, sequence}
+  @type apply :: {:apply, expr, params}
 
+  @type fun :: {:fun, id}
 
   @spec eval_expr(thing, env) :: :error | {:ok, any}
   def eval_expr({:atm, id}, _) do {:ok, id} end
   def eval_expr({:var, id}, env) do
-    IO.inspect(id)
+    #IO.inspect(id)
     case Env.lookup(id,env) do
       nil -> :error
-      {_, str} -> IO.inspect(str);{:ok, str}
+      {_, str} -> #IO.inspect(str);
+        {:ok, str}
       end
   end
   def eval_expr({:cons, e1, e2}, env) do
@@ -33,13 +46,40 @@ defmodule Eager do
   end
   #CASES
   def eval_expr({:case, expr, clauses}, env) do
-    IO.inspect(expr)
-    IO.inspect(clauses)
+    #IO.inspect(expr)
+    #IO.inspect(clauses)
     case eval_expr(expr, env) do
       :error -> :error
       {:ok, res} -> eval_cls(clauses, res, env)
     end
   end
+  #LAMBDA
+  def eval_expr({:lambda, param, free, seq}, env) do
+    #IO.inspect("LAMBDA")
+    #IO.inspect({free, env})
+    case Env.closure(free, env) do
+      :error -> :error
+      closure -> {:ok, {:closure, param, seq, closure}}
+    end
+  end
+  #APPLY
+  def eval_expr({:apply, expr, args}, env) do
+    case eval_expr(expr, env) do
+    :error -> :error
+    {:ok, {:closure, par, seq, closure}} ->
+      case eval_args(args, env) do  #ENV HERE WHY  NOT CLOSURE
+        :error -> :error
+        {:ok, str} ->
+          updated = Env.args(par, str, closure)
+          IO.inspect("eval_expr, :apply")
+          IO.inspect(seq)
+          IO.inspect(updated)
+          eval_seq(seq, updated)
+          # ERRORS??
+      end
+    end
+  end
+
 
   @spec eval_match(pattern, expr, env) :: :fail | {:ok, env}
   def eval_match(:ignore, _, env) do {:ok, env} end
@@ -51,21 +91,23 @@ defmodule Eager do
       {_, _} -> :fail
     end
   end
-  def eval_match({:cons, hp, tp}, {first, second} , env) do
-    case eval_match(hp , first , env) do
+  def eval_match({:cons, head, tail}, {first, second} , env) do
+    case eval_match(head , first , env) do
       :fail -> :fail
-      {:ok, env} -> eval_match(tp ,second ,env)
+      {:ok, env} -> eval_match(tail ,second ,env)
     end
   end
   def eval_match(_, _, _) do :fail end
 
 
   #SEQUENCES
-  @spec extract_vars(any, []) :: [variable]
+  @spec extract_vars(pattern, []) :: [variable]
   def extract_vars([], list) do Enum.sort(list) end
   def extract_vars({:atm, _}, list) do Enum.sort(list) end
   def extract_vars({:var, v}, list) do Enum.sort([v|list]) end
-  def extract_vars({:cons, first, second}, list) do Enum.sort(extract_vars(second, extract_vars(first, list))) end
+  def extract_vars({:cons, first, second}, list) do
+    Enum.sort(extract_vars(second, extract_vars(first, list)))
+  end
 
   @spec eval_scope(pattern, env) :: env
   def eval_scope(pattern, env) do Env.remove(extract_vars(pattern, []), env) end
@@ -76,10 +118,11 @@ defmodule Eager do
     case eval_expr(expr, env) do
       :error -> :error
       {:ok, res} ->
+
         updated = eval_scope(pattern, env)
         case eval_match(pattern, res, updated) do
           :fail -> :error
-          {:ok, new_env} -> eval_seq(rest, new_env)
+          {:ok, new_env} ->  eval_seq(rest, new_env)
         end
     end
   end
@@ -95,14 +138,21 @@ defmodule Eager do
     end
   end
 
+  #LAMBDA
+  @spec eval_args([any], env) :: :error | [any]
+  def eval_args(args, env) do eval_args(Enum.sort(args), env, []) end
 
+  @spec eval_args([expr], env, []) :: :error | {:ok, []}
+  def eval_args([], _, list) do {:ok, list} end
 
-
+  def eval_args([arg|args], closure, list) do
+    case eval_expr(arg, closure) do # WHY EVAL_EXPR
+      :error -> :error
+      {:ok, res} ->  eval_args(args, closure, [res | list])
+    end
+  end
+  def eval_args(_, _, _) do :error end
 end
-
-
-
-
 
 
 defmodule Env do
@@ -129,5 +179,28 @@ defmodule Env do
   def remove([id|rest], [{id,_}|tail]) do remove(rest, tail) end
   def remove([id|rest], [{env_id,str}|tail]) when id < env_id do remove(rest, [{env_id, str}|tail]) end
   def remove(ids, [_, tail]) do remove(ids, tail) end
+
+
+  #@spec closure([atom], env) :: env | :error
+  #def closure(free_var, env) do
+  #  closure(Enum.sort(free_var), env, [])
+  #end
+  #
+
+  #def closure(_, [], _) do :error end
+  #def closure([], _, new_env) do new_env end
+  #def closure([var|rest], [{var, value}|tail], new_env) do closure(rest, tail, Env.add(var, value, new_env)) end
+  #def closure(vars, [_|tail], new_env) do closure(vars, tail, new_env) end
+
+
+  @spec args([atom()], list(), any()) :: any()
+  def args([], [], closure) do  closure end
+  def args([param |rest], [str|tail], closure) do
+    IO.inspect("HELLOA")
+    IO.inspect(param)
+    IO.inspect(str)
+    IO.inspect(closure)
+     args(rest, tail, Env.add(param, str, closure))
+   end
 
 end

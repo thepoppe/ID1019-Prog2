@@ -130,3 +130,42 @@
         :error -> :error
         end
     end
+
+
+x = :A; x
+                pattern      expr
+exp = [{:match, {var,:x}, {atm, :A}},
+        {:var, :x}]
+            expr
+
+eval_seq( exp, []) 
+    case eval expr     => {:ok, :A}
+
+    ok => updated = eval_scope( pattern, env)  {:var, :x} från [] 
+
+        ny_env utan :x
+    
+
+            extract_vars( ptr) 
+                extract_vars( ptr, [] )
+            extract_vars ({var, :x}) dp [:x |[]]
+
+
+
+if (nått == nått)
+  kör a
+else if nått == nått annat
+  kör x  
+else
+  kör b
+
+
+case (nått) do
+  nått -> kör a
+  nått annat -> kör x
+  __ -> kör b
+
+
+def fun(nått) do kör a end
+def fun(nått_annat) do kör x end
+def fun(_) do kör b end
