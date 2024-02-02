@@ -2,7 +2,7 @@ defmodule Task3Test do
   use ExUnit.Case
   doctest Task3
 
-test "main test" do
+test "main test task3" do
   env = Map.new()
   env = Map.put(env, :x, 10)
   env = Map.put(env, :y, 5)
@@ -31,4 +31,36 @@ test "main test" do
   assert((Task3.main(expr9,env) == {:rational, "340/21"}), "ISSUES on 9")
 
 end
+
+test "lambda and apply" do
+  seq = [{:match, {:var, :x}, {:atm, :a}},
+          {:match, {:var, :f},
+          {:lambda, [:y], [:x], [{:cons, {:var, :x}, {:var, :y}}]}},
+          {:apply, {:var, :f}, [{:atm, :b}]}
+        ] # x = :a, f = fn y -> {x,y} end: f.(:b)
+{:ok, res} = Eager.eval_seq(seq, Env.new())
+assert(res  == {:a, :b}, "did not evaluate correctly")
+end
+
+test "eval scope, why do we do this" do
+  seq = [{:match, {:var, :x}, {:atm, :a}},
+        {:match, {:var, :x},{:atm, :b}},
+        {:cons, {:var, :x}, {:atm, :done}}
+      ] # x = :a; x = :b; {x, :done} => {:b, :done}
+  {:ok, res} = Eager.eval_seq(seq, Env.new())
+  assert(res  == {:b, :done}, "did not evaluate correctly")
+end
+
+test "Case1, Case2, what is this" do
+  seq = [{:match, {:var, :x}, {:atm, :a}},
+        {:case, {:var, :x},
+        [{:clause, {:atm, :b}, [{:atm, :ops}]},
+        {:clause, {:atm, :a}, [{:atm, :yes}]}
+        ]}
+        ] #x = :a; case x do :b -> :ops, :a -> :yes end
+  {:ok, res} = Eager.eval_seq(seq, Env.add(:x, :toberemoved, []))
+  assert(res  == :yes, "did not evaluate correctly")
+end
+
+
 end
