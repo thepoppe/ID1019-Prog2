@@ -107,7 +107,6 @@ defmodule Eager do
     case eval_expr(expr, env) do
       :error -> :error
       {:ok, res} ->
-
         updated = eval_scope(pattern, env)
         case eval_match(pattern, res, updated) do
           :fail -> :error
@@ -121,7 +120,8 @@ defmodule Eager do
   @spec eval_cls([clause], expr, env) :: :error | {:ok, env}
   def eval_cls([], _, _) do :error end
   def eval_cls([{:clause, pattern, seq} | cls], expr, env) do
-    case eval_match(pattern, expr, eval_scope(pattern, env)) do
+    env =  eval_scope(pattern, env)
+    case eval_match(pattern, expr, env) do
       :fail -> eval_cls(cls, expr, env)
       {:ok, new_env} ->eval_seq(seq, new_env)
     end
