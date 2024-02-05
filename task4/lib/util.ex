@@ -102,18 +102,14 @@ defmodule Util do
 
 
   # higher grade i think = reduce. FOR length, sum, mul
-  def foldr([], acc, op) do acc end
+  def foldr([], acc, _) do acc end
   def foldr([h|t], acc, op) do
     op.(h, foldr(t, acc, op))
   end
 
-  def sum2(list) do
-    add =  fn a,b -> a+b end
-    foldr(list, 0 , add)
-  end
 
   # fold left is tail recursive
-  def foldl([], acc, op) do acc end
+  def foldl([], acc, _) do acc end
   def foldl([h|t], acc, op) do foldl(t, op.foldl(h,acc),op) end
 
 
@@ -128,9 +124,9 @@ defmodule Util do
   end
 
 
-  #map applies a function to all elements in the list inc, dec, mul, div, rem
+  #map applies a function to all elements in the list inc, dec, mul
   def map([],_) do [] end
-  def map([h|t], op) do [op.(h)| map(t,h)] end
+  def map([h|t], op) do [op.(h)| map(t,op)] end
 
 
   #filter for even odd rem div
@@ -142,4 +138,58 @@ defmodule Util do
     end
   end
 
+
+
+  #HIGHER GRADE
+  def len_higher(list) do
+    len =  fn _,b -> b+1 end
+    foldr(list, 0 , len)
+  end
+  def sum_higher(list) do
+    add =  fn a,b -> a+b end
+    foldr(list, 0 , add)
+  end
+  def prod_higher(list) do
+    prod =  fn a,b -> a*b end
+    foldr(list, 1 , prod)
+  end
+
+  #map
+  def inc_higher(list, val) do
+    fun = fn x -> x + val end
+    map(list, fun)
+  end
+  def dec_higher(list, val) do
+    fun = fn x -> x - val end
+    map(list, fun)
+  end
+  def mul_higher(list, val) do
+    fun = fn x -> x * val end
+    map(list, fun)
+  end
+  def rem_higher(list, val) do
+    fun = fn x -> rem(x,val) end
+    map(list, fun)
+  end
+
+  def even_higher(list) do
+    compare = fn x -> rem(x,2) == 0 end
+    filter(list, compare)
+  end
+  def odd_higher(list) do
+    compare = fn x -> rem(x,2) != 0 end
+    filter(list, compare)
+  end
+  @spec div_higher(list(), any()) :: list()
+  def div_higher(list, num) do
+    compare = fn x -> rem(x,num) == 0 end
+    filter(list, compare)
+  end
+
+  # a list of integers, square of all numbers less than n
+  def sum_of_square_of_numbers_less_than(n, list) do
+    list = filter(list, fn x -> x<n end)
+    list = map(list, fn x -> x*x end)
+    foldr(list, 0, fn x,acc -> x+acc end)
+  end
 end

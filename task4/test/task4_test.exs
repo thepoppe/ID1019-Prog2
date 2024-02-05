@@ -54,5 +54,56 @@ defmodule Task4Test do
     v=3
     assert(Util.div1(x,v) == [12,15,18])
   end
+  test "length_higher" do
+    x=[1,2,3,4,5]
+    assert(Util.len_higher(x) == 5,"length1 error")
+  end
+  test "sum_higher" do
+    x=[1,2,3,4,5]
+    assert(Util.sum_higher(x) == 15,"sum1 error")
+  end
+  test "prod_higher" do
+    x=[1,2,3,4,5]
+    assert(Util.prod_higher(x) == (2*3*4*5),"prod1 error")
+  end
+  test "inc_higher" do
+    x=[1,2,3,4,5]
+    val = 10
+    assert(Util.inc_higher(x, val) == [11,12,13,14,15],"inc_higher error")
+  end
+  test "dec_higher" do
+    x=[11,12,13,14,15]
+    val = 10
+    assert(Util.dec_higher(x, val) == [1,2,3,4,5],"dec_higher error")
+  end
+
+  test "mul_higher" do
+    x= [11,12,13,14,15]
+    val = 2
+    assert(Util.mul_higher(x, val) == [22,24,26,28,30],"dec1 error")
+  end
+  test "rem_higher" do
+    x= [11,12,13,14,15]
+    val = 3
+    list = Util.rem_higher(x, val)
+    assert(list == [2, 0, 1, 2, 0], "error, list: is not [2, 0, 1, 2, 0]")
+  end
+  test "even_higher" do
+    x= [11,12,13,14,15,16,17,18]
+    assert(Util.even_higher(x) == [12,14,16,18])
+  end
+  test "odd_higher" do
+    x= [11,12,13,14,15,16,17,18]
+    assert(Util.odd_higher(x) == [11,13,15,17])
+  end
+  test "div_higher" do
+    x= [11,12,13,14,15,16,17,18]
+    v=3
+    assert(Util.div_higher(x,v) == [12,15,18])
+  end
+  test "sum of squares"
+  list = [1,2,3,4,5,6]
+  v= 4
+  sum = Util.sum_of_square_of_numbers_less_than(v, list)
 
 end
