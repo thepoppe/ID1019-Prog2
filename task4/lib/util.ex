@@ -4,7 +4,7 @@ defmodule Util do
   #returns the length
   def length1(list) do length1(list, 0) end
   def length1([], acc) do acc end
-  def length1([h|t], acc) do length1(t, acc + h) end
+  def length1([_|t], acc) do length1(t, acc + 1) end
 
   def length2([]) do 0 end
   def length2([_|t]) do 1 + length2(t) end
@@ -37,25 +37,25 @@ defmodule Util do
   #increment all values with incr
   def inc1(list, incr) do reverse(inc1(list, incr, []), []) end
   def inc1([], _, res) do res end
-  def inc1([h|t], incr, list) do inc1(t, incr, [h|list]) end
+  def inc1([h|t], incr, list) do inc1(t, incr, [h+incr|list]) end
 
-  def inc([], val) do val end
+  def inc([], _) do [] end
   def inc([h|t], val) do [h+val| inc(t, val)] end
 
 
   #decrement all the values by decr
   def dec1(list, decr) do reverse(dec1(list, decr, []), []) end
   def dec1([], _, res) do res end
-  def dec1([h|t], decr, list) do dec1(t, decr, [h|list]) end
+  def dec1([h|t], decr, list) do dec1(t, decr, [h-decr|list]) end
 
   def dec([], _) do [] end
-  def dec([h|t], val) do [h-val|dec(t)] end
+  def dec([h|t], val) do [h-val|dec(t,val)] end
 
 
   #multiplies all value by multiple
   def mul1(list, value) do reverse(mul1(list, value, []), []) end
   def mul1([], _, res) do res end
-  def mul1([h|t], value, list) do mul1(t, value, [h|list]) end
+  def mul1([h|t], value, list) do mul1(t, value, [h*value|list]) end
 
   def mul([], _) do [] end
   def mul([h|t], val) do [h*val | mul(t, val)] end
@@ -63,7 +63,7 @@ defmodule Util do
   #returns a list of the results of the reminder from number
   def rem2([], _) do [] end
   def rem2([h|t], num) do
-    [rem(h, num)|rem2(t,num)]
+    [(rem(h, num))|rem2(t,num)]
   end
 
 
@@ -101,16 +101,13 @@ defmodule Util do
   end
 
 
-
-
-
   # higher grade i think = reduce. FOR length, sum, mul
   def foldr([], acc, op) do acc end
   def foldr([h|t], acc, op) do
     op.(h, foldr(t, acc, op))
   end
 
-  def sum(list) do
+  def sum2(list) do
     add =  fn a,b -> a+b end
     foldr(list, 0 , add)
   end
@@ -122,12 +119,12 @@ defmodule Util do
 
   def flatten_r(list) do
     f = fn a, acc -> a ++ acc end
-    foldr(x,[], f)
+    foldr(list,[], f)
   end
 
   def flatten_l(list) do
     f = fn a,acc -> acc ++ a end
-    foldl(x, [], f)
+    foldl(list, [], f)
   end
 
 
