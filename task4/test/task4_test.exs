@@ -97,6 +97,10 @@ defmodule Task4Test do
     x= [11,12,13,14,15,16,17,18]
     assert(Util.even_higher(x) == [12,14,16,18])
   end
+  test "even_higher_2" do
+    x= [11,12,13,14,15,16,17,18]
+    assert(Util.even_higher_2(x) == [12,14,16,18])
+  end
   test "odd_higher" do
     x= [11,12,13,14,15,16,17,18]
     assert(Util.odd_higher(x) == [11,13,15,17])

@@ -134,7 +134,6 @@ defmodule Util do
 
 
   #filter for even odd rem div
-  #tailrecursive
   def filter([],_) do []end
   def filter([h|t],op)do
     if op.(h) do
@@ -145,7 +144,7 @@ defmodule Util do
   end
   #order not maintained
   def filter2(list, op) do filter2(list, [], op) end
-  def filter2([], acc, _) do acc end
+  def filter2([], acc, _) do reverse(acc, []) end
   def filter2([h|t], list, op) do
     if op.(h) do
       filter2(t, [h|list], op)
@@ -196,11 +195,14 @@ defmodule Util do
     compare = fn x -> rem(x,2) == 0 end
     filter(list, compare)
   end
+  def even_higher_2(list) do
+    compare = fn x -> rem(x,2) == 0 end
+    filter2(list, compare)
+  end
   def odd_higher(list) do
     compare = fn x -> rem(x,2) != 0 end
     filter(list, compare)
   end
-  @spec div_higher(list(), any()) :: list()
   def div_higher(list, num) do
     compare = fn x -> rem(x,num) == 0 end
     filter(list, compare)
