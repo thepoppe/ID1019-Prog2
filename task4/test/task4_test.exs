@@ -71,6 +71,11 @@ defmodule Task4Test do
     val = 10
     assert(Util.inc_higher(x, val) == [11,12,13,14,15],"inc_higher error")
   end
+  test "inc_higher2" do
+    x=[1,2,3,4,5]
+    val = 10
+    assert(Util.inc_higher_2(x, val) == [11,12,13,14,15],"inc_higher error")
+  end
   test "dec_higher" do
     x=[11,12,13,14,15]
     val = 10
@@ -101,9 +106,20 @@ defmodule Task4Test do
     v=3
     assert(Util.div_higher(x,v) == [12,15,18])
   end
-  test "sum of squares"
+  test "sum of squares" do
   list = [1,2,3,4,5,6]
-  v= 4
-  sum = Util.sum_of_square_of_numbers_less_than(v, list)
-
+  v1 = 4
+  v2 = 6
+  sum = Util.sum_of_squares_less_than(v1, list)
+  assert(sum == 14)
+  assert(Util.sum_of_squares_less_than(v2, list) == 55)
+  end
+  test "sum of squares 2" do
+    list = [1,2,3,4,5,6]
+    v1 = 4
+    v2 = 6
+    sum = Util.sum_of_squares_2(v1, list)
+    assert(sum == 14)
+    assert(Util.sum_of_squares_2(v2, list) == 55)
+    end
 end

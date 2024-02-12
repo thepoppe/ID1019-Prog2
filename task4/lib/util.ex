@@ -29,8 +29,8 @@ defmodule Util do
 
 
   #reverses the list
-  def reverse([], list) do list end
-  def reverse([h|t], list) do reverse(t, [h|list]) end
+  def reverse([], acc) do acc end
+  def reverse([h|t], acc) do reverse(t, [h|acc]) end
 
 
   #MAP
@@ -101,40 +101,56 @@ defmodule Util do
   end
 
 
-  # higher grade i think = reduce. FOR length, sum, mul
+  # higher grade i think = reduce. for length, sum, mul
   def foldr([], acc, _) do acc end
   def foldr([h|t], acc, op) do
     op.(h, foldr(t, acc, op))
   end
-
-
   # fold left is tail recursive
   def foldl([], acc, _) do acc end
-  def foldl([h|t], acc, op) do foldl(t, op.foldl(h,acc),op) end
+  def foldl([h|t], acc, op) do foldl(t, op.(h,acc), op) end
 
 
   def flatten_r(list) do
     f = fn a, acc -> a ++ acc end
     foldr(list,[], f)
   end
-
   def flatten_l(list) do
     f = fn a,acc -> acc ++ a end
     foldl(list, [], f)
   end
 
 
-  #map applies a function to all elements in the list inc, dec, mul
+
+  #map applies a function to all elements in the list for inc, dec, mul
+  #tailrecursive
   def map([],_) do [] end
   def map([h|t], op) do [op.(h)| map(t,op)] end
 
+  #tail recursive
+  def map2(list, op) do map2(list,[], op) end
+  def map2([], acc, _) do reverse(acc, []) end
+  def map2([h|t], acc, op) do map2(t, [op.(h)|acc], op) end
+
 
   #filter for even odd rem div
+  #tailrecursive
   def filter([],_) do []end
   def filter([h|t],op)do
     if op.(h) do
-      [h|filter(t,op)]
-    else filter(t, op)
+      [h|filter(t, op)]
+    else
+      filter(t, op)
+    end
+  end
+  #order not maintained
+  def filter2(list, op) do filter2(list, [], op) end
+  def filter2([], acc, _) do acc end
+  def filter2([h|t], list, op) do
+    if op.(h) do
+      filter2(t, [h|list], op)
+    else
+      filter2(t, list, op)
     end
   end
 
@@ -158,6 +174,10 @@ defmodule Util do
   def inc_higher(list, val) do
     fun = fn x -> x + val end
     map(list, fun)
+  end
+  def inc_higher_2(list, val) do
+    fun = fn x -> x + val end
+    map2(list, fun)
   end
   def dec_higher(list, val) do
     fun = fn x -> x - val end
@@ -187,9 +207,13 @@ defmodule Util do
   end
 
   # a list of integers, square of all numbers less than n
-  def sum_of_square_of_numbers_less_than(n, list) do
+  def sum_of_squares_less_than(n, list) do
     list = filter(list, fn x -> x<n end)
     list = map(list, fn x -> x*x end)
     foldr(list, 0, fn x,acc -> x+acc end)
+  end
+
+  def sum_of_squares_2(n,list) do
+    list |> filter(fn x -> x<n end) |> map(fn x -> x*x end) |> foldr(0, fn x,acc -> x+acc end)
   end
 end
