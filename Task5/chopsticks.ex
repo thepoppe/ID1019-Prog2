@@ -1,38 +1,31 @@
 defmodule Chopstick do
 
   def start do
-    #IO.inspect("START")
-    stick = spawn_link(fn -> available() end)
+    spawn_link(fn -> available() end)
     end
 
-  def available do
-    #IO.inspect("AVAILABLE")
-    #IO.inspect(self())
+  defp available do
     receive do
     {:request, caller_pid} ->
       send(caller_pid, :granted);
       gone();
-    #:return -> available();
     :quit -> :ok
     end
   end
 
-  def gone() do
-    #IO.inspect("GONE")
-    #IO.inspect(self())
+  defp gone() do
     receive do
       :return -> available();
       :quit -> :ok
     end
   end
 
-  def request(stick) do
-    #IO.inspect("REQUEST")
+  def request(stick, timeout) do
     send(stick, {:request, self()})
     receive do
       :granted ->  {stick, :taken}
       :quit -> :ok
-      #after timeout -> {stick, :timeout}
+      after timeout -> {stick, :timeout}
     end
   end
 
