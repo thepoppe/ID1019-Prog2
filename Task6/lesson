@@ -1,0 +1,37 @@
+Lösning är för bra, den har ett fall där en falsk chopstick
+uppkommer
+
+make_ref() är unika refernser som kan användas
+
+
+
+starvation:
+
+I sekventiell programmering så kan man få infinite loops och crashar men i parallell så behöver man hanterar det.
+Starvation är att en process hamnar out of sync och får aldrig de resurser den behöver. 
+För att minska starvation, i ethernet så backa protokollet och tar längre och längre wait tid men det skulle innebära 
+i parallell programmering att den som starvar får ännu lägre chans att få resurses.
+
+Prioritets märkningar kan lösa detta där.
+
+
+
+I uppgiften så kan man också använda en central kontroller som sköter utdelningen av pinnar.
+
+synchron om vi skickar ett send så väntar vi på att det ska ske sekventiellt
+
+asynchron request frågar om båda samtidigt 
+
+Chop.request(left,ref)
+Chop.request(right,ref)
+case wait(ref, @timeout) do
+  :ok -> wait(ref, @timeout)
+
+
+Försöka garantera att vi inte får en cirkulär struktur. markera dem som a,b c, d, e
+    om sista philosophen får pinnarna 1,5 istället fö 5,1 och då behöver vi inga timeouts eller ref eller något.
+    detta funkar bara om vi vet vilka pinnarna är och lås.
+
+
+En annan är att faktiskt detektera deadlock och inte bara anta en tid.
+OM jag väntar och får en pinne så skickar jag vidare. Går den pennan runt ett varv så vet jag att det är en deadlock.
