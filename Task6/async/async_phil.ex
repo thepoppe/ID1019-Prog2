@@ -1,14 +1,14 @@
-defmodule Sphil do
+defmodule Aphil do
   @timeout 50
-  @dreaming 2
+  @dreaming 1
   @eating 1
-  @delay 0
+  @delay 4
   # 3 states, dreaming | waitin | eating
   def start(hunger, left, right, name, ctrl) do
     spawn_link(fn -> loop_states(:dreaming, hunger, left, right, name, ctrl) end)
   end
 
-  defp loop_states(_, 0, _, _, _, ctrl) do send(ctrl, :done) end
+  defp loop_states(_, 0, _, _, name, ctrl) do IO.puts("#{name} is done"); send(ctrl, :done) end
 
   defp loop_states(:dreaming, hunger, left, right, name, ctrl) do
     #IO.puts("#{name} is sleeping\n")
@@ -17,9 +17,14 @@ defmodule Sphil do
   end
   defp loop_states(:waiting, hunger, left, right, name, ctrl) do
     #IO.puts("#{name} is waking up\n")
-    Schop.request(left)
-    Schop.request(right)
-    loop_states(:eating, hunger, left, right, name, ctrl)
+    Achop.request(left, self())
+    receive do
+      :granted -> Achop.request(right, self())
+      delay(:const, @delay)
+      receive do
+        :granted -> loop_states(:eating, hunger, left, right, name, ctrl)
+      end
+    end
   end
 
 
@@ -31,8 +36,8 @@ defmodule Sphil do
   end
 
   defp return_chopsticks(left, right) do
-    Chopstick.return(left)
-    Chopstick.return(right)
+    Achop.return(left)
+    Achop.return(right)
   end
 
   defp delay(:sleep, 0) do :ok end
