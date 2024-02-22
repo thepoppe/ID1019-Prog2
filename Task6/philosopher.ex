@@ -1,6 +1,6 @@
 defmodule Philosopher do
-  @timeout 5
-  @dreaming 1
+  @timeout 50
+  @dreaming 2
   @eating 1
   @delay 0
   # 3 states, dreaming | waitin | eating
@@ -63,18 +63,18 @@ defmodule Philosopher do
 
 
 
-  defp loop_states(:lesson, hunger, left, right, name, ctrl) do
-    case Chopstick.request(left, @timeout) do
-      {_, :taken} -> case Chopstick.request(right, @timeout) do
-        {_, :taken} -> loop_states(:eating, hunger, left, right, name, ctrl)
-        {_, :timeout} ->
-          Chopstick.return(left)
-          Chopstick.return(right)
-          loop_states(:dreaming, hunger, left, right, name, ctrl)
-      end
-      {_, :timeout} ->
-        Chopstick.return(left)
-        loop_states(:lesson, hunger, left, right, name, ctrl)
-    end
-  end
+  #defp loop_states(:lesson, hunger, left, right, name, ctrl) do
+  #  case Chopstick.request(left, @timeout) do
+  #    {_, :taken} -> case Chopstick.request(right, @timeout) do
+  #      {_, :taken} -> loop_states(:eating, hunger, left, right, name, ctrl)
+  #      {_, :timeout} ->
+  #        Chopstick.return(left)
+  #        Chopstick.return(right)
+  #        loop_states(:dreaming, hunger, left, right, name, ctrl)
+  #    end
+  #    {_, :timeout} ->
+  #      Chopstick.return(left)
+  #      loop_states(:lesson, hunger, left, right, name, ctrl)
+  #  end
+  #end
 end

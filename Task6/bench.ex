@@ -2,11 +2,11 @@ defmodule Bench do
 
   def test() do
     range = 1..10
-    range = Enum.map(range, fn x -> x * 10 end)
+    range = Enum.map(range, fn x -> x * 100 end)
     time = Enum.map(range, fn x ->
       IO.inspect(x);
       t0 = System.monotonic_time(:millisecond);
-      pid = Dinner.start(x);
+      pid = Dinref.start(x);
       loop(pid)
       t1 = System.monotonic_time(:millisecond);
       send(pid, :abort)

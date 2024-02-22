@@ -28,10 +28,10 @@ end
 
 def wait(stick, ref, timeout) do
     receive do
-      {:granted, ^ref, _} ->  {stick, :taken, ref}
-      {:granted, _, _} ->  wait(stick, ref, timeout)
+      {:granted, ^ref} ->   :taken
+      {:granted, _} ->  wait(stick, ref, timeout)
       :quit -> :ok
-      after timeout -> {stick, :timeout}
+      after timeout -> :timeout
     end
   end
 
