@@ -1,4 +1,4 @@
-defmodule Chopref do
+defmodule Rchop do
 
   def start do
     spawn_link(fn -> available() end)
@@ -16,22 +16,22 @@ defmodule Chopref do
   defp gone(ref) do
     receive do
       {:return, ^ref} -> available();
-      {:return, _}-> gone(ref);
+      {:return, _} -> gone(ref);
       :quit -> :ok
     end
   end
 
   def request(stick, ref, timeout) do
     send(stick, {:request, ref, self()})
-    wait(stick, ref, timeout)
-end
+    wait(ref, timeout)
+  end
 
-def wait(stick, ref, timeout) do
+  def wait(ref, timeout) do
     receive do
-      {:granted, ^ref} ->   :taken
-      {:granted, _} ->  wait(stick, ref, timeout)
+      {:granted, ^ref} -> :granted
+      {:granted, _} ->  wait(ref, timeout)
       :quit -> :ok
-      after timeout -> :timeout
+      after timeout -> {:timeout, ref}
     end
   end
 

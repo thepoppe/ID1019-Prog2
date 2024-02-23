@@ -8,11 +8,11 @@ defmodule Adinner do
     c5 = Achop.start()
     ctrl = self()
     t0 = :erlang.timestamp()
-    Aphil.start(n, c1, c2, :arendt, ctrl)
-    Aphil.start(n, c2, c3, :hypatia, ctrl)
-    Aphil.start(n, c3, c4, :simone, ctrl)
-    Aphil.start(n, c4, c5, :elisabeth, ctrl)
-    Aphil.start(n, c1, c5, :ayn, ctrl)
+    Aphil.start(n, n, c1, c2, :a, ctrl)
+    Aphil.start(n, n, c2, c3, :b, ctrl)
+    Aphil.start(n, n, c3, c4, :c, ctrl)
+    Aphil.start(n, n, c4, c5, :d, ctrl)
+    Aphil.start(n, n, c5, c1, :e, ctrl)
     wait(5, [c1, c2, c3, c4, c5], t0)
   end
 
