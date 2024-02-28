@@ -138,7 +138,7 @@ defmodule Main do
 
 
     def small(x0, y0, xn) do
-    width = 2556
+    width = 2560
     height = 1440
     depth = 64*4
     k = (xn - x0) / width
