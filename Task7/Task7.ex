@@ -24,6 +24,7 @@ defmodule Cmplx do
     :math.sqrt(x*x + y*y)
   end
 
+
 end
 
 defmodule Brot do
@@ -79,7 +80,20 @@ end
 
 defmodule Color do
 
-  def convert(depth, max) do
+  def convert_blue(depth, max) do
+    a = depth/max * 4
+    x = trunc(a)
+    y = trunc(255*(a-x))
+
+    case trunc(a) do
+      0-> {:rgb, 0,0,y}
+      1-> {:rgb, 0,y,255}
+      2-> {:rgb, 0,255,255-y}
+      3-> {:rgb, y, 255, 0}
+      4-> {:rgb, 255, 255-y, 0}
+    end
+  end
+  def convert_red(depth, max) do
     a = depth/max * 4
     x = trunc(a)
     y = trunc(255*(a-x))
@@ -106,7 +120,7 @@ defmodule Mandel do
 
   def rows(_w, 0, _t, _max, acc) do
     #IO.puts("END ROWS")
-    Enum.reverse(acc)
+    acc
   end
   def rows(w, h, t, max, acc) do
     #IO.puts("rows | w:#{w}|h#{h}");
@@ -115,13 +129,13 @@ defmodule Mandel do
 
   def row(0,_,_,_, acc) do
     #IO.puts("END LINE");
-    Enum.reverse(acc)
+    acc
   end
   def row(w, h, t, max, acc) do
     #IO.puts("Line | w:#{w}|h#{h}");
     c = t.(w,h)
     depth = Brot.mandelbrot(c, max);
-    rgb = Color.convert(depth, max);
+    rgb = Color.convert_red(depth, max);
     #IO.puts(inspect(depth))
     #IO.puts(inspect(rgb))
     row(w-1, h, t, max, [rgb | acc])
@@ -130,22 +144,39 @@ end
 
 defmodule Main do
   def demo() do
-    small(-1.25, -0.2, -0.9)
-    #small(-2.6, 1.2, 1.2)
+    #small(-1.25, -0.2, -0.9)
+    small(-1.3, 0.25, -1.11)
+    #small(-0.15, 0.9, 0.5)
+    #a = 0.004
+    #b = 0.0008
+    #small(-0.365+a/2 + b, 0.674-a/2-b, -0.354-a-b)
 
   end
 
+  def bench() do
+    :timer.tc(fn -> bench_run(-2.6, 1.2, 1.2) end)
+  end
+  def bench_run(x0,y0,xn) do
+    width = 960
+    height = 540
+    depth = 64
+    k = (xn - x0) / width
+    image = Mandelv_3.mandelbrot(width, height, x0, y0, k, depth)
+    :ok
+  end
 
 
     def small(x0, y0, xn) do
-    width = 2560
-    height = 1440
-    depth = 64*4
+    width = 1920
+    height = 1080
+    depth = :math.pow(2,10)
     k = (xn - x0) / width
-    image = Mandel_v2.mandelbrot(width, height, x0, y0, k, depth)
-    PPM.write("small.ppm", image)
+    image = Mandel.mandelbrot(width, height, x0, y0, k, depth)
+    #PPM.write("small.ppm", image)
   end
 end
+
+
 
 defmodule Mandel_v2 do
   def mandelbrot(width, height, x, y, k, max) do
@@ -156,25 +187,25 @@ defmodule Mandel_v2 do
   end
 
   def rows(_w, 0, _t, _max, acc) do
-    Enum.reverse(acc)
+    acc
   end
-  def rows(w, h, t, max, acc) when h >=12 do
-    f1 = Async.eval(fn -> row(w, h, t, max, []) end)
-    f2 = Async.eval(fn -> row(w, h-1, t, max, [])end)
-    f3 = Async.eval(fn -> row(w, h-2, t, max, [])end)
-    f4 = Async.eval(fn -> row(w, h-3, t, max, [])end)
-    f5 = Async.eval(fn -> row(w, h-4, t, max, [])end)
-    f6 = Async.eval(fn -> row(w, h-5, t, max, [])end)
-    f7 = Async.eval(fn -> row(w, h-6, t, max, []) end)
-    f8 = Async.eval(fn -> row(w, h-7, t, max, [])end)
-    f9 = Async.eval(fn -> row(w, h-8, t, max, [])end)
-    f10 = Async.eval(fn -> row(w, h-9, t, max, [])end)
-    f11 = Async.eval(fn -> row(w, h-10, t, max, [])end)
-    f12 = Async.eval(fn -> row(w, h-11, t, max, [])end)
-    f=[f1|[f2|[f3|[f4|[f5|[f6|[f7|[f8|[f9|[f10|[f11|[f12]]]]]]]]]]]]
-    result = collect_results(f, acc)
-    rows(w, h-12, t, max, result)
-  end
+  #def rows(w, h, t, max, acc) when h >=12 do
+  #  f1 = Async.eval(fn -> row(w, h, t, max, []) end)
+  #  f2 = Async.eval(fn -> row(w, h-1, t, max, [])end)
+  #  f3 = Async.eval(fn -> row(w, h-2, t, max, [])end)
+  #  f4 = Async.eval(fn -> row(w, h-3, t, max, [])end)
+  #  f5 = Async.eval(fn -> row(w, h-4, t, max, [])end)
+  #  f6 = Async.eval(fn -> row(w, h-5, t, max, [])end)
+  #  f7 = Async.eval(fn -> row(w, h-6, t, max, []) end)
+  #  f8 = Async.eval(fn -> row(w, h-7, t, max, [])end)
+  #  f9 = Async.eval(fn -> row(w, h-8, t, max, [])end)
+  #  f10 = Async.eval(fn -> row(w, h-9, t, max, [])end)
+  #  f11 = Async.eval(fn -> row(w, h-10, t, max, [])end)
+  #  f12 = Async.eval(fn -> row(w, h-11, t, max, [])end)
+  #  f = [f1|[f2|[f3|[f4|[f5|[f6|[f7|[f8|[f9|[f10|[f11|[f12]]]]]]]]]]]]
+  #  result = collect_results(f, acc)
+  #  rows(w, h-12, t, max, result)
+  #end
   def rows(w, h, t, max, acc) when h >= 6 do
     f1 = Async.eval(fn -> row(w, h, t, max, []) end)
     f2 = Async.eval(fn -> row(w, h-1, t, max, [])end)
@@ -198,12 +229,12 @@ defmodule Mandel_v2 do
   end
 
   def row(0,_,_,_, acc) do
-    Enum.reverse(acc)
+    acc
   end
   def row(w, h, t, max, acc) do
     c = t.(w,h)
     depth = Brot.mandelbrot(c, max);
-    rgb = Color.convert(depth, max);
+    rgb = Color.convert_blue(depth, max);
     row(w-1, h, t, max, [rgb | acc])
   end
 end
