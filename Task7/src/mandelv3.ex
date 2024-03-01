@@ -25,7 +25,7 @@ defmodule Mandel_v3 do
     c = t.(w,h)
     #depth = Brot.mandelbrot(c, max);
     depth = Cmplx.mandelbrot(c, max);
-    rgb = Color.convert_red(depth, max);
+    rgb = Color.convert_blue(depth, max);
     row(w-1, h, t, max, [rgb | acc])
   end
 
