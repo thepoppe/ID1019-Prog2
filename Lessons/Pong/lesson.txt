@@ -1,0 +1,27 @@
+Öppna upp en tcp server, kallas för listen socket. :active beteyder att det ligger en process och lyssnar och skickar inkommande automatiskt
+{:ok, listen} = :gen_tcp.listen(8080, [{:active, true}])
+
+Låser fast oss på att lyssna på port 8080
+{:ok, socket} = :gen_tcp.accept(listen)
+
+msh = recieve do
+{:tcp, } ...
+
+user -> pong.js -> websocket -> HTTP -> TCP ->    |
+pong server <- session <- handler <- HTTP <- TCP <-
+
+
+Sequence diagram
+Starta session 1 och 2 start(name, self())
+
+starta igånn websoclet mot port 8080 med ses 1 och ses 2 som arguemnt
+
+till varje session skapar vi en handler som connectas till websocket ??
+
+en websocket öppnas mellan browser och handlers
+
+    handler skickar {:ws, pid, :open} till respektive session.
+
+
+
+Pong servern skickar alltid till alla klienter.
