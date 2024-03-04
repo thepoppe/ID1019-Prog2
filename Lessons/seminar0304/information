@@ -1,0 +1,59 @@
+in elixir a way to create an object is to use an tuple
+{:car, "Volco", {:model ...}, {:engine, ...}, {:perf,...}}
+
+This works with pattern matching to some degree but consider the case where a price tuple is added. Then all pattern matching will fail in the code at run time.In the mandelbrot task the inside structure of the Cmplx
+
+In java, define class Car with properties. In java cpp and static language when adding more properties, is no problem but if removing something the code will not be compiled correctly.
+
+Another way to represent is a car is a key value list
+{:car, "Volvo", [list of properties]}. This approach wil not crash patternmatching in other functions.
+This is pretty slow since we need to traverse the list to see if properties is available.
+
+
+To avoid traversing we can use a map instead of a list. Its the go-to datastructure for key-value pairs.
+
+Now an object can be a tuple with elements in a map.
+ELixire provides a defstruct to help with this. Only on struct per module.
+
+def struct is initialized with the intial values Syntax
+
+defmodule Foo do
+  defstruct[{:length, 172}, {:shoe, 42}, {:age, 42}]
+end
+
+
+iex:> olle = %Foo{}
+iex:> olle = %Foo{:length, 195}
+iex:> olle.length 
+length: 195
+
+
+
+
+
+Raytracing
+
+Represent the objects ray, sphere, object
+
+Ray: position and direction ( unit vector)
+
+defmodule Ray do
+  defstruct(pos: {0,0,0}, dir: {0,0,1})
+end
+
+
+In java we can implement interfaces, elixir way to do this is defprotocol.
+defprotocol Object do 
+  def intersect(object, ray)
+end
+
+A sphere is a defstruct with a postiion and radius.
+
+
+intersection: ...
+
+
+
+
+For each loops. for y <- 1..i
+
