@@ -17,12 +17,18 @@ defmodule Huffman do
   tree = tree(sample)
   encode = encode_table(tree)
   #decode = decode_table(tree)
-  text = text()
-  seq = encode(text, encode)
-  IO.puts("ENCODE")
-  Enum.each(seq, fn s ->IO.write(s)end)
+  #text = text()
+  #seq = encode(text, encode)
+  #IO.puts("ENCODE")
+  #Enum.each(seq, fn s ->IO.write(s)end)
 
-  :ok
+  #:ok
+  end
+
+
+  ##EXPECTS A MAP NOT A LIST
+  def decode_table(etable) do
+    Enum.reduce(Map.to_list(etable), Map.new, fn {key, value}, map -> Map.put(map, value, key)end)
   end
 
   def tree(sample) do
