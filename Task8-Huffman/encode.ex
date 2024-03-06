@@ -19,4 +19,15 @@ defmodule Encode do
           seq ++ encode(rest, table)
     end
   end
+  def encode2(seq,table) do encode2(seq,table,[]) end
+  def encode2([],_, acc) do Enum.reverse(acc) end
+  def encode2([char|rest],table, acc) do
+    case Map.get(table,char) do
+      :nil ->
+        IO.puts("Error on #{char}")
+        encode(rest, table)
+        seq ->
+           encode2(rest, table, [seq|acc])
+    end
+  end
 end

@@ -1,7 +1,7 @@
 defmodule Decode do
 ## NOT GOOD
   def decode_table(etable) do
-    Enum.reduce(Map.to_list(etable), Map.new, fn {key, value}, map -> Map.put(map, value, key)end)
+    Enum.reduce(Map.to_list(etable), [], fn {key, value}, acc ->[ { value, key} | acc] end)
   end
 
   #THIS IS VERY BAD, complecity n * djupet på trädet( log( antalet bokstäver))
@@ -14,10 +14,9 @@ defmodule Decode do
   end
   def decode_char(seq, n, table) do
     {code, rest} = Enum.split(seq, n)
-    case List.keyfind(table, code, 1) do
+    case List.keyfind(table, code, 0) do
       {_, char} -> {char, rest}
-      nil ->
-      decode_char(seq, n+1, table)
+      nil -> decode_char(seq, n+1, table)
     end
   end
 

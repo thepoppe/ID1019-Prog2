@@ -3,7 +3,7 @@ defmodule Huff do
   def tree(sample) do
     freq = freq(sample)
     sorted = Enum.sort(freq, fn a,b -> elem(a,1) < elem(b,1) end)
-    {tree, freq} = build_tree(sorted)
+    {tree, _} = build_tree(sorted)
     tree
   end
 
